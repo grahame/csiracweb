@@ -17,10 +17,13 @@ import { TapePicker, type TapeFile } from "./TapePicker";
 import { TapeViewer } from "./TapeViewer";
 import { useConsoleKeys } from "./useConsoleKeys";
 import type { Walkthrough } from "./useMachine";
+import CsiracLogo from "../csirac-traced.svg";
 
 export function App() {
     return (
         <div className="app">
+        <div className="screen">
+          <a href="/csirac/"><img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" /></a>
             <Routes>
                 <Route path="/" element={<PickerScreen />} />
 
@@ -42,6 +45,7 @@ export function App() {
                 {/* Anything else, including a stale link, goes back to the reader. */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
+        </div>
 
             <Credit />
         </div>

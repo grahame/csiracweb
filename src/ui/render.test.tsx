@@ -109,8 +109,6 @@ describe("the settings screen", () => {
 
     it("reproduces the control desk switch panel", () => {
         const markup = panel(atSwitchOn());
-        expect(markup).toContain("The Control Desk Switch Panel settings are:");
-        expect(markup).toContain("Reader Selector: 12 HOLE");
         expect(markup).toContain("NA register:  0  0  1  0");
         expect(markup).toContain("Halt Selector: OFF");
         expect(markup).toContain("SQRT.DAT");

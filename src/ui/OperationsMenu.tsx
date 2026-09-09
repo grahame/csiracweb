@@ -81,7 +81,6 @@ export function OperationsMenu({ controller, onExit }: OperationsMenuProps) {
                 hand: it follows the tape, because how many holes a tape has is a
                 property of the tape. So it is shown here as where the switch stands
                 rather than as something to set. */}
-            <div className="menu-readout">READER: {view.reader5Hole ? "5 HOLE" : "12 HOLE"}</div>
             {/* "Use the program tape" reads as an instruction to switch to it, when
                 what it means is that the program tape is the one being read. The
                 label says which tape is in the reader, and the tooltip says what

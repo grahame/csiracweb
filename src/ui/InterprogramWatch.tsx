@@ -266,7 +266,7 @@ function Narration({ run }: { run: WatchedRun }) {
 
     return (
         <div className="narration">
-            <div className="column-head">The procedure (automated for this run)</div>
+            <div className="column-head">Interprogram Ops Procedure (automated)</div>
             <ol className="narration-steps">
                 {steps.map((step, index) => (
                     <li

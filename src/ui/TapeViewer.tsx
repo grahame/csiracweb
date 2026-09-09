@@ -81,7 +81,7 @@ export function TapeViewer({
     const setText = tab === "program" ? setProgram : setData;
 
     return (
-        <div className="screen tape-viewer">
+        <div className="tape-viewer">
             <div className="viewer-head">
                 <h2>Tapes</h2>
                 <div className="viewer-tabs">

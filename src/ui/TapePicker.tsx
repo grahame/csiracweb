@@ -8,7 +8,6 @@
 
 import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import CsiracLogo from "../csirac-traced.svg";
 
 import { PROMPTS } from "../emulator/interprogram";
 import type { Walkthrough } from "./useMachine";
@@ -265,8 +264,7 @@ export function TapePicker({ onMount }: TapePickerProps) {
     const navigate = useNavigate();
 
     return (
-        <div className="screen tape-picker">
-            <img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" />
+        <div className="tape-picker">
             <h2>Experience Australia's first digital computer</h2>
 
             <p className="subtitle">

@@ -27,7 +27,7 @@ export function Console({ controller, onOptions, onTapes, onExit }: ConsoleProps
     const { view, running, status, statusIsError, loading, notes, walkthrough } = controller;
 
     return (
-        <div className="screen console-screen">
+        <div className="console-screen">
             {notes ? <p className="operating-notes">{notes}</p> : null}
 
             {/* A tape that has to be worked through shows its steps here, at the
@@ -97,9 +97,6 @@ export function Console({ controller, onOptions, onTapes, onExit }: ConsoleProps
                         <PromptStatus running={running} fault={statusIsError}>
                             {status}
                         </PromptStatus>
-                        {/* While the machine is running the count climbs every frame, so a
-                            program that has run off the end of itself and is going round in
-                            circles looks like what it is, rather than like a frozen page. */}
                         <span className="prompt-count">{view.instructionCount.toLocaleString()} instructions</span>
                     </div>
                 }

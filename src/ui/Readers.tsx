@@ -43,10 +43,6 @@ export function Readers({ view, programName, programText, dataName, dataText }: 
 
     return (
         <div className="readers">
-            <div className="reader-selector">
-                <span className="reader-selector-label">Reader</span> {selectorHoles} HOLE
-            </div>
-
             <div className="reader-pair">
                 {program ? (
                     <Reader

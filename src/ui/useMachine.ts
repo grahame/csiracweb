@@ -215,7 +215,7 @@ export function useMachine({ keepsDrum = true }: MachineOptions = {}) {
                 // program, which stops the machine. Say so, rather than reporting it
                 // as the program having stopped: the program has not run yet.
                 setLoading(false);
-                report("Program read into store. Press RETURN to execute it.");
+                report("Program read into store.");
             } else if (result.reason === "trigger-stop") {
                 report("Stopped: halt selector reached");
             } else if (result.reason === "one-shot") {
@@ -309,7 +309,7 @@ export function useMachine({ keepsDrum = true }: MachineOptions = {}) {
                 // operator had asked for it, and again when they did, so reading in
                 // ends where it should: at 0 0, with the machine stopped.
                 setLoading(false);
-                report("Program read into store. Press RETURN to execute it.");
+                report("Program read into store.");
                 setView(snapshot(machine, memoryStart));
                 return;
             }

@@ -121,8 +121,8 @@ export function InterprogramPage() {
     );
 
     return (
-        <div className="screen interprogram-screen">
-            <h1>Interprogram</h1>
+        <div className="interprogram-screen">
+            <h2>Interprogram: Australia's first programming language</h2>
             <p className="subtitle">
                 Australia&rsquo;s first high level language, G. W. Hill, Computation Laboratory, University of
                 Melbourne, 1960

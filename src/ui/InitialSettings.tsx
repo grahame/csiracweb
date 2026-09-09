@@ -46,10 +46,11 @@ export function InitialSettings({
     const onOff = (on: boolean) => (on ? "ON" : "OFF");
 
     return (
-        <div className="screen settings-screen">
+        <div className="settings-screen">
+          <h2>Initial CSIRAC settings</h2>
+          <p>Use this screen to set the machine up, prior to reading in the program tape. You can likely just hit the "Read program into memory" button to proceed.</p>
             <pre className="settings-text">
-                {`The Control Desk Switch Panel settings are:
-
+                {`
 Unit add to S per command: ON
 Reader Switch: ON   Reader Selector: ${view.reader5Hole ? " 5 HOLE" : "12 HOLE"}
 Punch: ON   Printer: ON   Punch Selector: ${view.punch5Hole ? " 5 HOLE" : "12 HOLE"}
@@ -77,14 +78,14 @@ Data tape:    ${dataName || "(none)"}`}
                 <button type="button" className="prompt-action" title="Press O" onClick={onOptions}>
                     Options
                 </button>
-                <button type="button" className="prompt-action" title="Press RETURN" onClick={onAccept}>
-                    Read program into memory
-                </button>
                 <button type="button" className="prompt-action" title="Press T" onClick={onTapes}>
                     View or edit the tape
                 </button>
                 <button type="button" className="prompt-action secondary" onClick={onBack}>
                     Choose another tape
+                </button>
+                <button type="button" className="prompt-action" title="Press RETURN" onClick={onAccept}>
+                    Read program into memory
                 </button>
             </div>
         </div>
