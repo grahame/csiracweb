@@ -1,0 +1,17 @@
+     (1)  TITLE  LOG(X+IY)=U+IV WHERE  U=LOG(SQRT(X*X+Y*Y)) & V=ARCTAN Y/X
+bbbbb(2)  SYMBOLS FOR INTEGERS   NONE
+     (4)  COMPILE THE FOLLOWING INTERPROGRAM
+
+ *1    INPUT X, & Y
+ *2    TAKE X, MULTIPLY BY X, REPLACE XSQUARED
+ *3    TAKE Y, MULTIPLY BY Y, ADD XSQUARED 
+ *4    FORM SQUARE ROOT, FORM NATURAL LOG, REPLACE U
+       TAKE Y, DIVIDE BY X, FORM ARCTAN
+       IF X IS POSITIVE, GO TO *37                   # EXTEND ARCTAN
+       ADD 1, IF THIS IS GREATER THAN 1, ADD -2      # TO RANGE (-1,1)
+ *37   MULTIPLY BY 3.14159, REPLACE V                # V IN RADIANS
+       OUTPUT U, & V
+ *40   END OF INTERPROGRAM
+eeeee
+     2  4     
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

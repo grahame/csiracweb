@@ -1,0 +1,20 @@
+     (1)  TITLE  ALPHA = BETA - 27.394 + A(3).(X/Y)
+bbbbb(2)  SYMBOLS FOR INTEGERS   J
+     (3)  MAXIMUM SUBSCRIPTS   A(3)
+     (4)  COMPILE THE FOLLOWING INTERPROGRAM
+
+ *1    INPUT J
+ *2    IF THIS IS ZERO, GO TO *7     # END WHEN J = 0
+ *3    INPUT BETA, & A(3), & X, & Y
+ *4    TAKE X, DIVIDE BY Y, MULTIPLY BY A(3)
+       SUBTRACT 27.394, ADD BETA, REPLACE ALPHA
+       TAKE J, OUTPUT, OUTPUT ALPHA
+ *6    GO TO *1
+ *7    END OF INTERPROGRAM
+     1   25.382    2.754      7     0.92
+     2   31.542   -1.832      9     1.24
+     3   22.379   -0.023     11     2.57
+     4   23.456   +0.001     23     0.17
+     5   27.356   +1.113      3   -95.76  
+     0
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

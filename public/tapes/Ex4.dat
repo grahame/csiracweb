@@ -1,0 +1,21 @@
+     (1)  TITLE  EXAMPLE OF OUTPUT, LAYOUT AND FUNCTION FORMATION
+
+bbbbb(2)  SYMBOLS FOR INTEGERS   NONE
+     (4)  COMPILE THE FOLLOWING INTERPROGRAM
+          
+          PUNCH THE FOLLOWING CHARACTERS
+   DATUM      LOG     EXP(LOG)    SINE      TAN  ARCTAN(TAN)
+------------------------------------------------------------l
+bbbbbbCOPY TAPE                  # DATA TAPE IDENTIFICATION
+ *2    INPUT DATUM, GO TO *3, GO TO *4  #WHEN 'END' IS READ
+ *3    OUTPUT, FORM NATURAL LOG, OUTPUT,
+       FORM EXPONENTIAL, OUTPUT,        # EXP(LOG(DATUM))
+       TAKE DATUM, FORM SINE, OUTPUT,
+       TAKE DATUM, FORM TANGENT, OUTPUT,
+       FORM ARCTAN, OUTPUT              # END PRINTED ROW
+       GO TO *2                         # REPEAT FOR EACH DATUM VALUE
+ *4    END OF INTERPROGRAM
+eeeeeSAMPLE SET OF DATA
+bbbbbee0.0   0.166667   0.25   0.333333   0.5   0.666667   1.0
+ 2.71828   -0.166667   -0.25   -0.5   123.456   -4567.89   END
+bbbbbbbbbbb

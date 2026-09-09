@@ -1,0 +1,406 @@
+                    CSIRACEM - A CSIRAC EMULATOR
+                   ----------------------------
+
+ This program is designed to emulate the CSIRAC instruction set on
+an IBM-compatible PC. It makes no attempt to mimic the architecture or speed
+of CSIRAC nor to reproduce any of its known idiosyncracies, many of
+which in any case were eliminated during the time of my use of the
+machine (1959-1964). It does however strive to emulate most of the
+features of the CSIRAC console and displays, within the limits of
+a text screen under DOS 6.2. A more realistic display may be possible
+by using a graphics screen, but that will be left for later consideration.
+The program is written in TurboPascal version 6, using the lower
+20 bits of the 32 bit Longint type to hold CSIRAC words.
+
+The CSIRAC program to be run is simulated by a text file, which normally
+starts with a Primary routine (without X-punches), a control routine,
+the subroutines used by the main program, then the main program itself.
+The Primary is first read, then control is passed to it by clearing the
+Sequence register to allow the remainder of the program to be read
+into memory under control of the primary. This operation is automatic
+in the CSIRACEM program, and no manual intervention (such as to set NA or
+clear the sequence register) is necessary, unless some non-standard primary
+such as Muncey's non-stop primary is being used, when NA must be set
+before the program is read in (see later).
+Because the end of the primary is signalled by the occurrence of
+blank tape, some blank rows must be left after the primary when
+the program is assembled, as was normal practice with CSIRAC.
+The stored program may then be executed.
+Output is written to text files (one each for the OT and OP destinations).
+The content of these files is the text in ASCII of what would appear on the
+Teleprinter (for OT) or what would appear when the output tape was
+printed by the Flexowriter (for OP with 5-hole punch selected). When the
+5-hole punch is selected, output is character by character; when the
+12-hole punch is selected output is row by row and each tape row is
+output in the same format as the input format described below.
+
+Program Input Format
+--------------------
+columns
+1234567
+mm nnXY  where mm and nn are the most and least significant 32-scale
+         numbers, X = X if there is an X punch, else space,
+                  Y = Y if there is a Y punch, else space.
+
+A program is read from a text file, in a format where each tape row
+is represented by two 32-scale numbers separated by a space and denoting
+either the most significant and least significant parts of the address
+or the 32-scale equivalent of the source and destination. This occupies
+5 columns. In addition, if the row contains an X-punch there is an
+X in column 6; if the row contains a Y-punch there is a Y in column 7.
+Thus the command 31 26 K PS (occupying two tape rows) would be
+represented by
+31 26^^
+26 24X^
+and the control statement 4A (also occupying two tape rows) would be
+represented by
+ 0  4^^
+ 0  2^Y
+where ^ represents a space character.
+Any information in columns >7 in the input file is ignored, and may
+be used for comments.
+The program file may be headed by one or more lines (starting beyond
+column 7) of heading, terminated by a blank row ( with ^0^^0^^ in
+columns 1-7 where ^ represents a space). Several more blank rows normally
+follow before the program starts, and it is usual to have several
+blank rows at the end of the file.
+Program files are normally named with an extension of .CVT, but this
+is not mandatory.
+
+Data Input/Output
+-----------------
+Data input will also be from a text file, the format of which is determined
+by the input routine used and the program using it. Only one data file
+which may be for the 5-hole or the 12-hole reader is currently
+allowed for. 
+5-hole data are read in ASCII, character by character not row by row,
+so that the 5-hole data file may be in any convenient layout, usually
+in the form resulting when a 5-hole data tape was printed out on the
+Flexowriter. ASCII characters are automatically converted to
+Flexowriter code on input and are used internally in that form, so that 
+subroutines for handling Flexowriter code work as they used to. The
+internal Flexowriter code is automatically converted back to ASCII on
+output. 
+If it is necessary to specifically indicate the shift status in an input
+file (as sometimes required in Interprogram data files), figure shift and 
+letter shift may be represented by the lower case letters f and s 
+respectively, and a blank tape row may be indicated by a lower case b.
+Blank rows specifically output are represented in the output by a lower 
+case b and the Flexowriter stop code by a lower case s.
+Thus 5-hole data files are prepared in the ASCII code used by
+the IBM-compatible PC, and 5-hole output files are also in ASCII, and 
+are thus immediately readable by the PC.
+Data output to the Teleprinter (destination OT) are also automatically
+converted to ASCII in a file readable by the PC.
+12-hole data are read row by row. 12-hole data tapes originally output
+from CSIRAC, when converted to the m nXY format by the tape reader 
+in the Melbourne University Computer Science Department, may be read
+by the program used with CSIRAC to read it, when the program has been 
+converted in the same way.
+
+Invoking the Emulator Program
+-----------------------------
+The program is invoked by entering
+
+CSIRACEM ProgramFileName DataFileName
+
+on the command line from DOS or from a DOS box in Windows 3.x or 95.
+With Windows 95 or 98 it may be better to run the program in MSDOS mode.
+Steps are being taken to create a 32-bit version using Free Pascal instead
+of TurboPascal, which it is expected will run in a DOS box in
+Windows 95 or 98.
+ProgramFileName and DataFileName may be any valid DOS filenames, and
+should include the path if they are located in a different directory
+to that from which the program is invoked.  A file MAHOLD, which
+holds the contents of the drum store MA, is written to the current
+directory (or to the directory where the CSIRACEM.EXE file resides if
+a path is included) on exit if any writes to MA have been encountered
+during program execution. This file (if it exists) is automatically
+read each time a program is launched, thus preserving the drum contents.
+Inclusion of the filenames on the command line is optional, and if
+not present they are requested when the program is loaded. If no
+data file is required, just RETURN when the data filename is
+requested, and no data file will be expected. The program stops
+with an appropriate error message if the designated files cannot
+be located.
+Output filenames are automatically generated from the Program
+filename by deleting any extension and replacing it with OT
+for the Teleprinter output file, or OP for the Flexowriter or 
+12-hole output file. 
+Any output sent to the Teleprinter, as well as being written to the
+.OT file, is echoed in a window below the D register display. This is
+of necessity e.g. to enable instructions from Interprogram to be seen as they
+are sent, as it would be impractical to have to examine the .OT file.
+On exit from the program any zero length files (i.e. when the OT and/or OP 
+destination is not used by the program) are deleted.
+After valid filename(s) have been entered and their existence checked,
+a screen of information appears, giving the initial Control Desk Switch 
+Panel settings assumed, and the default initial state of registers, 
+Memory and Drum store:
+-----------------------------------------------------------------------------
+The initial Control Desk Switch Panel settings are:                             
+                                                                                
+Unit add to S per command: ON                                                   
+Reader Switch: ON   Reader Selector: 12 HOLE                                    
+Halt Selector: OFF  Speed Selector: HIGH                                        
+Punch: ON   Printer: ON   Punch Selector: 5 HOLE                                
+Main store display selector: 0  0 (to display primary usually)                  
+Display: CONTENT OF ALL D REGISTERS                                             
+Halt Selector address: 23  31                                                   
+NA register: 0 0 0 0  NB register: 0 0 0 0  I register: 0 0 0 0                 
+Clearance Buttons: (All Reg,A,B,C,All D,H,S,I,Out,Tape Reader): OFF             
+One Shot: OFF                                                                   
+NA & S to K: OFF   NA to K: OFF                                                 
+Drum Writing Control: ON                                                        
+Start/Stop: START  Start: ON                                                    
+                                                                                
+Machine starts with (S)=0, All Registers, Main Store clear                      
+Auxiliary (drum) store not cleared                                              
+                                                                                
+Video display on during program execution                                       
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+Press O for options or RETURN to read program into memory                       
+-----------------------------------------------------------------------------
+
+If O is selected another screen appears listing the alterable
+parameters and an Options menu:
+
+-----------------------------------------------------------------------------
+The current settings are:                                                       
+Reader Selector: 12 HOLE    Punch Selector: 5 HOLE      NA to K: OFF            
+NA register:  0  0  0  0    NB register:  0  0  0  0    I register:  0  0  0  0 
+One-Shot switch: OFF   Halt Selector: OFF    Halt Selector address:  0  0       
+Memory Display Address:  0  0   Display D registers                             
+Video ON during program execution                                               
+Press F to read from 12-hole data File instead of program file                  
+      R to Read in another program                                              
+      N to toggle NA to K switch (default OFF)                                  
+      P to load a T001 Primary and Control stored in memory into 0 0 to 0 24    
+      5 to toggle punch between 5 hole (default) and 12 hole                    
+      E to Edit memory                                                          
+      M to set Memory display address (default 0 0)                             
+      T to TSP a section of memory                                              
+      A to set NA register, B to set NB register, I to set I register           
+      S to clear Sequence register                                              
+      H to set Halt Selector and/or Halt Selector address                       
+      L to Look at register and memory display then return here                 
+      O to toggle OneShot switch (default OFF)                                  
+      C to toggle display between 0s and 1s (default) and "more like CSIRAC"    
+      D to toggle display between D registers and last 16 commands executed     
+      V to disable video during program execution                               
+      X to eXit (return to Operating System)                                    
+or RETURN to accept above settings                                              
+-----------------------------------------------------------------------------
+Notes
+. F is for changing between reading the 12-hole program file and reading
+   a 12-hole data file and is equivalent to removing the program tape
+   from the reader, and inserting a 12-hole data tape. This is
+   necessary to let the CSIRACEM program know that the file will
+   be read as data under control of the stored program, and not
+   interpreted as program and stored in memory.
+. R is for Reading in another program, which may or may not
+   include a primary. The Sequence Register is automatically cleared in
+   this operation.
+. P is for storing a standard Primary and control (for use if a program
+   lacking a primary and control is to be input). The program to follow must
+   start with a transfer control statement in this case.
+. T is for producing a Tape Symbol Print (TSP) of memory or drum between
+   designated addresses.
+. O is to set the One-shot switch or H the halt selector which stops
+   the program after the current or selected command is executed.
+. L is for Looking at the register and memory display without altering the
+   sequence register, and then returning to the Options menu. This
+   option is useful to inspect the display after changing the memory
+   display start address or after changing between D register
+   and last 16 commands executed display, without causing execution 
+   of the program to start or continue.
+. D is for toggling between a display of the D registers or of the last 16
+   commands executed. The record of the last 16 commands executed
+   is continually updated, but is only displayed when execution is
+   halted (if its display has been selected).  It is unreadable when
+   a program is executing anyway.
+. V may be used to disable the register display during program execution.
+    Refreshing the screen display is time-consuming, and selecting V can
+    significantly reduce the running time of a program which would
+    normally run for several minutes. It is not necessary to use this
+    option except with long-running programs.
+. X is for eXiting to the Operating System with an optional display of
+   the last screenful of output. No provision is made to move through
+   the output file - if a more complete examination is required, look at
+   the ProgramName.OT file or the ProgramName.OP file with a text reader.
+   This option is the normal way of concluding a program.
+Though upper case letters are specified in the menu, lower case letters
+are acceptable. The Options menu itself can be entered by pressing
+o instead of O if convenient.
+Several parameters may be altered; as each change is completed the
+current settings display at the top is altered to reflect the change made. 
+It is important always to check that the requisite (5-hole or 12-hole)
+reader and punch are selected, as the wrong combination  will
+produce nonsense or an error message.
+Note that Muncey's non-stop primary requires that NA be set to 2 0 1 0 
+BEFORE reading in the program.
+When all parameters are as required, pressing RETURN will start 
+program reading.
+When the program is read in, and the final DO command leads to a stop in
+the normal manner, another opportunity is available to select the Options
+menu, to toggle the reader or to press RETURN to start program execution. 
+A typical operating screen shows:
+-----------------------------------------------------------------------------
+A 00000 00000 00000 00000   B 01011 00101 00101 10100                       *  *
+C 01010 01110 01101 00110   H 10110 00001     O 00001      K 00000 00000    S  T
+S 01010 01110 00000 00000  MA 01011 00110 11011 00000                           
+I 11000 00000 11111 10000                                                       
+            D                     M (0,0) onwards                               
+  10000 00001 10101 01110    00000 10101 11010 10111   READER: 12 HOLE          
+  00000 00000 00000 00000    00000 00000 10001 10010                            
+  00000 00000 00000 00000    00000 00000 10010 11001                            
+  00000 00000 00000 00000    00000 00110 11010 11000                            
+  00000 00000 00000 00000    00000 01100 10101 00101                            
+  00000 00000 00000 00000    00000 01101 01011 11000                            
+  00000 00000 00000 00000    00000 01110 01110 11010                            
+  00000 00000 00000 00000    00000 00000 01001 00000                            
+  00000 00000 00000 00000    00000 00001 11000 01111                            
+  00000 00000 00000 00000    00000 00000 11000 11000                            
+  00000 00000 00000 00000    00000 00011 10110 00101                            
+  00000 00000 00000 00000    00000 00000 00001 10001                            
+  00000 00000 00000 00000    00000 00000 10001 10101                            
+  00000 00000 00000 00000    00000 00000 10010 11001                            
+  00000 00000 00000 00000    00000 00111 11000 10111                            
+  00000 00000 00000 00000    00000 00110 10110 11000                            
+                                                                                
+                                                                                
+                                                                                
+Press O for options, R to toggle reader or RETURN to execute program            
+----------------------------------------------------------------------------
+The top line of this screen shows the content of the A and B registers,
+in each case as 4 groups of 5 binary digits.
+In all cases of 20 bit registers, the p20 digit is at the left and
+the p1 digit at the right hand end.
+The second line shows the 20-bit content of the C register, the 10 digits of
+the half-register H, the logical sum of the p15-p11 and p5-p1 digits of
+the Output register O, the p20-p11 digits of the Interpreter (K) register,
+and finally the source and destination mnemonics of the last instruction
+executed.
+The third line shows the 20-bit contents of the Sequence register S, and
+the 20 digits of the last number sent to the drum (MA).
+The fourth line shows the 20-bit contents of the Input register I.
+Below are shown on the left the content of the 16 D registers (or the
+20-bit representation of the last 16 commands executed, if this has been
+selected) then the contents of 16 successive memory (M) cells, starting
+at the designated address. To the right of these columns is an indicator
+of which reader (5-hole or 12-hole) is currently selected.
+This display includes most of the information available from the
+CRT displays and indicator lights observable from the operator console
+position.
+At any time during program execution, pressing any key will pause
+the running program to enable examination of a static display, and
+to change Options by pressing O, or to continue execution by pressing
+RETURN.
+By selecting O and then X from the Options menu the CSIRACEM program
+may be terminated, and control returned to the operating system.
+An emergency exit from the CSIRACEM program is usually available by
+hitting Control/Break twice, but this would cause some output to be lost.
+When One-Shot is on, or when the program is halted on reaching a
+selected Halt address, a two line display of the decimal content
+of the A, B, C, D0, and D1 registers appears near the bottom of
+the screen. An example is shown below:  
+
+Fraction  A -0.003456  B -0.120117  C 0.524288  D0 -0.937487  D1 0.000000       
+Integer   A    -1812  B   -62976  C   274878  D0  -491513   D1        0         
+
+The top line shows the register content as a fraction (binary
+point between p20 and p19) and the bottom line shows the same
+content as an integer (binary point to the right of p1). I hope
+that this is not too offensive to purists, but it can be very
+useful.
+
+Error Messages
+--------------
+ The following error messages may be encountered when using the CSIRACEM
+ program:
+
+ 1. "Filename" does not exist. Try again.
+
+ This message occurs when the specified program or data file "Filename"
+ cannot be  located. It may be due to misspelling, wrong filename extension
+ (normally .CVT) etc. It may also occur because the file is not in the
+ directory from which the CSIRACEM program was launched. In this case the
+ full DOS path must be supplied as "Filename".
+ Two further tries may be made to correct the situation; if unsuccessful
+ the message
+
+ 3 tries and you're out
+
+ appears and the CSIRACEM program terminates.
+
+ 2. Error on line n
+
+ This message can occur when the primary, the program, or a 12-hole
+ data file is being read in if one or both of the 32-scale numbers on
+ line n is out of range, or the line is otherwise invalidly formatted.
+ The CSIRACEM program terminates after this message so that the error can
+ be corrected.
+
+ 3. Error(s) in input data. Please try again.
+
+ This message arises from the operations under the Options menu when
+ input of 2 or 4 32-scale numbers is asked for, and the numbers are out of
+ the required range, or not correctly spaced. As many tries as necessary
+ may be made until valid input is attained. The message may occur with the
+ I, A, B, E, H, M or T options.
+
+ 4. Unexpected EOF on 5-hole data file
+
+ This message occurs when an attempt is made to read past the
+ end-of-file on the file representing a 5-hole data tape. It may
+ be caused by having the wrong reader selected.It is a fatal error 
+ and causes termination of the CSIRACEM program.
+
+ 5. Unexpected End of File - probably missing DO
+    or no blank rows at end of tape
+
+ This message is encountered when an end-of-file is found when reading
+ the file representing the CSIRAC program. It is usually due to the
+ requisite DO command being omitted from the end of the program file,
+ or may result when the wrong reader is selected, and causes 
+ the CSIRACEM program to terminate.
+
+ Every effort has been made to avoid the occurrence of error messages
+ generated from the Pascal compiler, which are likely to be unintelligible.
+ Please advise me if you get such a message, and if full details of
+ the circumstances are provided, an attempt will be made to correct
+ the situation.
+
+Limitations
+-----------
+. The O register display shows only the lower 5 digits, made up of
+  the disjunction of p15..p11 with p5..p1, and represents the character
+  sent to destination OT or OP when the 5-hole punch is selected,
+  but only represents the lower 5 digits of the row sent when the
+  12-hole punch is selected.
+. Only one data file, which may be for 5-hole or 12-hole input is allowed for.
+. Only one pair of output files (ProgramName.OT and ProgramName.OP)
+  is allowed for.
+  If more than one program is executed, output from subsequent
+  program(s) is appended to the existing output file(s), under the name of
+  the original program, even if a different output punch was selected.
+. Three Greek Teleprinter characters cannot be represented from the English
+  code page 437 and are replaced by spaces.
+. The changed left shift coding introduced with the fast optimizing
+  mode 3 on CSIRAC is not supported. 
+These limitations are not absolute, and most could be overcome by
+modifying the program if it is found necessary to do so.
+
+Reports of any errors found in the CSIRACEM program will be dolefully
+received. Any criticisms and suggestions will be gratefully received.
+
+============================================================ 
+| John W. Spencer      | Phone: (03) 9592 4311             |  
+| 42 Whyte St          | email: <jspencer@melbpc.org.au>   |                                                           
+| Brighton, Victoria, Australia, 3186                      |
+============================================================                            
+ 27 Jan 2000
+

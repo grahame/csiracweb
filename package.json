@@ -1,0 +1,35 @@
+{
+  "name": "csiracweb",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Web emulator for CSIRAC, ported from John W. Spencer's Turbo Pascal CSIRACEM",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@fontsource-variable/jost": "^5.3.0",
+    "@fontsource-variable/source-code-pro": "^5.3.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router": "^7.18.3"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "canvas": "^3.2.3",
+    "jsdom": "^30.0.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
+  }
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 1000 300"
+   version="1.1"
+   id="svg6"
+   sodipodi:docname="csirac-traced.svg"
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.56316662"
+     inkscape:cx="101.21338"
+     inkscape:cy="145.60522"
+     inkscape:window-width="1710"
+     inkscape:window-height="1045"
+     inkscape:window-x="0"
+     inkscape:window-y="34"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g6" />
+  <title
+     id="title1">CSIRAC — traced lettering</title>
+  <desc
+     id="desc1">Transparent SVG tracing of the CSIRAC sign lettering, with the surrounding sign and background omitted.</desc>
+  <g
+     fill="#D88900"
+     id="g6">
+    <!-- C -->
+    <path
+       d="m 179.57029,48 c -24,-13 -53,-19 -79,-13 -37.000004,9 -59.000004,43 -60.000004,93 -1,52 20,90 58.000004,100 28,7 59,1 81,-13 l -13,-32 c -17,11 -35,16 -53,14 -23.000004,-3 -36.000004,-26 -36.000004,-67 0,-40 13,-62 36.000004,-65 18,-2 36,3 53,13 z"
+       id="path1" />
+    <!-- S -->
+    <path
+       d="M 312,47 C 291,34 264,29 241,34 c -32,6 -49,28 -49,57 0,31 19,48 50,60 l 21,8 c 13,5 17,13 13,24 -4,11 -15,16 -29,15 -17,-1 -33,-8 -47,-19 l -12,34 c 17,15 41,22 65,21 36,-1 60,-21 63,-53 3,-30 -14,-49 -45,-61 l -24,-10 c -11,-5 -16,-12 -14,-21 2,-9 10,-15 21,-16 14,-1 27,4 40,13 z"
+       id="path2" />
+    <!-- I -->
+    <path
+       d="m 353.14947,39.151652 38.99843,-0.349437 -4.29737,190.046135 -38.99843,0.34943 z"
+       id="path3" />
+    <!-- R -->
+    <path
+       fill-rule="evenodd"
+       d="m 426,39 h 56 c 48,0 71,19 71,57 0,26 -14,43 -36,51 l 43,77 h -44 l -38,-67 h -13 l -2,67 h -38 z m 40,33 v 54 h 16 c 19,0 30,-10 30,-27 0,-18 -10,-27 -30,-27 z"
+       id="path4" />
+    <!-- A -->
+    <path
+       fill-rule="evenodd"
+       d="M 569,224 619,42 h 43 l 53,182 h -42 l -11,-40 h -45 l -10,40 z m 55,-73 h 32 L 640,88 Z"
+       id="path5" />
+    <!-- C -->
+    <path
+       d="M 849,48 C 825,35 798,29 772,35 c -37,9 -59,43 -60,93 -1,52 20,90 58,100 28,7 59,1 81,-13 l -13,-32 c -17,11 -35,16 -53,14 -23,-3 -36,-26 -36,-67 0,-40 13,-62 36,-65 18,-2 36,3 53,13 z"
+       id="path6" />
+  </g>
+</svg>

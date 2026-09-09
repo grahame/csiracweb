@@ -1,0 +1,1014 @@
+/*
+ * The look.
+ *
+ * The DOS emulator ran yellow on black on an 80 by 25 text screen, and this
+ * followed it for a long while. It reads better as what CSIRAC's own paperwork
+ * looked like: black on white, the fixed width displays set in a typewriter
+ * face and everything else in the geometric sans its manuals were titled in.
+ *
+ * Jost* stands in for that titling face. The cover of the Interprogram manual
+ * sets CSIRAC in widely letterspaced geometric capitals with an even stroke, a
+ * circular C and a pointed A, which is the Futura idiom that display work of
+ * the period used; Jost* is a free face in that idiom. Source Code Pro carries
+ * the registers, the store and the tape listings, where the columns have to
+ * line up.
+ *
+ * Both are installed from npm and served from the bundle, so the page pulls
+ * nothing from anyone else's server.
+ */
+
+@import "@fontsource-variable/jost";
+@import "@fontsource-variable/source-code-pro";
+
+:root {
+    --paper: #fbfaf6;
+    --ink: #1c1c1c;
+    --ink-dim: #6b6b66;
+    --ink-strong: #000000;
+    /* The lamps and the phosphor keep their green; it is a signal, not text. */
+    --accent: #0f7a33;
+    --error-ink: #a81f1f;
+    --panel: #f6f5f1;
+    --rule: #d8d5cc;
+
+    --display: "Jost Variable", "Jost", "Futura", "Century Gothic", sans-serif;
+    --mono: "Source Code Pro Variable", "Source Code Pro", ui-monospace, monospace;
+
+    font-family: var(--mono);
+    font-size: 15px;
+    line-height: 1.4;
+    color-scheme: light;
+}
+
+/*
+ * The titling face carries the headings and the prose. Everything that has to
+ * line up in columns stays in the typewriter face, which is the default.
+ */
+h1,
+h2,
+h3,
+p,
+label,
+button,
+select,
+.subtitle,
+.tape-detail,
+.viewer-note,
+.credit,
+.operating-notes,
+.options-message,
+.reader-head,
+.reader-tape,
+.reader-count,
+.reader-selector,
+.printer-head,
+.machine-state-head,
+.listing th,
+.listing td.what,
+.viewer-mount,
+.error {
+    font-family: var(--display);
+}
+
+/* ... but not where the shape of the text is the point. */
+pre,
+code,
+textarea,
+input,
+.binary,
+.reg,
+.register-row,
+.store-row,
+.column-head,
+.menu-item,
+.listing .punches,
+.listing .word,
+.listing .mnemonic-cell,
+.listing .num,
+.settings-text,
+.decimal-readout,
+.data-text,
+.prompt-count {
+    font-family: var(--mono);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #e4e0d6;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+}
+
+.app {
+    width: 100%;
+    max-width: 1120px;
+    padding: 1rem;
+}
+
+.screen {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+
+h1,
+h2,
+h3 {
+    font-weight: bold;
+    margin: 0 0 0.5rem;
+}
+
+/* The Interprogram manual sets CSIRAC in widely letterspaced capitals. */
+h1 {
+    font-size: 3.6rem;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--ink-strong);
+    /*
+   * No text-indent. Letterspacing belongs after each letter, not before the
+   * first, so indenting by it only pushed the title right of the subtitle and
+   * the list below.
+   */
+    margin: 0 0 0.6rem;
+}
+
+h2 {
+    font-size: 2rem;
+    color: var(--ink-strong);
+    margin-top: 1.25rem;
+}
+
+h3 {
+    font-size: 0.9rem;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+button {
+    font: inherit;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--rule);
+    padding: 0.15rem 0.5rem;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    color: var(--paper);
+    background: var(--ink);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+input,
+select {
+    font: inherit;
+    color: var(--ink-strong);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 0.1rem 0.3rem;
+    margin-left: 0.4rem;
+}
+
+input[aria-invalid="true"] {
+    border-color: var(--error-ink);
+}
+
+pre {
+    margin: 0;
+    font: inherit;
+    white-space: pre-wrap;
+}
+
+.error {
+    color: var(--error-ink);
+}
+
+/* ---- Tape picker ------------------------------------------------------- */
+
+.subtitle {
+    color: var(--ink-dim);
+    margin-top: 0;
+    margin-bottom: 1.75rem;
+    letter-spacing: 0.01em;
+}
+
+.tape-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tape-list li {
+    display: grid;
+    /*
+   * Each row is its own grid, so the first column is given a width rather than
+   * sized to content, which would leave the buttons ragged. It is measured in
+   * ch, the width of a digit, so it holds the longest tape name whatever the
+   * monospace font turns out to be: Multiplication.cvt is 18 characters, and
+   * the rest is the button's own padding and border.
+   */
+    grid-template-columns: calc(19ch + 1.5rem) 1fr;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--rule);
+    align-items: start;
+}
+
+/* Fill the column, so the buttons line up and a name never wraps out of one. */
+.tape-list li > button {
+    width: 100%;
+    white-space: nowrap;
+}
+
+.tape-detail p {
+    margin: 0.25rem 0 0;
+    color: var(--ink-dim);
+}
+
+.tape-data {
+    color: var(--accent);
+}
+
+.tape-upload {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.tape-upload label {
+    display: flex;
+    align-items: center;
+}
+
+/* ---- Initial settings -------------------------------------------------- */
+
+.settings-text {
+    color: var(--ink);
+}
+
+/* ---- Console ----------------------------------------------------------- */
+
+.console-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.registers {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.register-row {
+    display: flex;
+    gap: 1.5rem;
+    white-space: pre;
+}
+
+.reg {
+    white-space: pre;
+}
+
+.indicator-head,
+.mnemonic {
+    margin-left: auto;
+    color: var(--ink-strong);
+}
+
+.binary {
+    letter-spacing: 0.02em;
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: start;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.column-head {
+    color: var(--ink-strong);
+    margin-bottom: 0.2rem;
+    white-space: pre;
+}
+
+.store-row {
+    white-space: pre;
+}
+
+.store-index {
+    color: var(--ink-dim);
+}
+
+/* ---- Operations menu --------------------------------------------------- */
+
+.operations-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 0.05rem;
+}
+
+.menu-item {
+    border: none;
+    padding: 0 0.2rem;
+    text-align: left;
+    white-space: pre;
+}
+
+.menu-readout {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0 0.2rem;
+    color: var(--ink-dim);
+    white-space: pre;
+}
+
+.menu-note {
+    color: var(--accent);
+    padding-left: 0.2rem;
+}
+
+.menu-entry {
+    padding: 0.2rem;
+}
+
+.menu-entry label {
+    display: flex;
+    flex-direction: column;
+    color: var(--accent);
+}
+
+.menu-entry input {
+    margin: 0.2rem 0 0;
+    width: 10rem;
+}
+
+/* ---- CRT bank ---------------------------------------------------------- */
+
+/*
+ * The bank sat above the console and is the width of the machine, so it takes
+ * the width of the page. Its height follows from the proportions of crt.gif,
+ * which the component sets as an aspect ratio; the canvas is given the pixels
+ * to match rather than being stretched.
+ */
+.crt-bank {
+    display: block;
+    width: 100%;
+    margin: 0 0 0.6rem;
+    background: transparent;
+}
+
+/* ---- Output ------------------------------------------------------------ */
+
+.decimal-readout {
+    color: var(--accent);
+}
+
+/*
+ * What came off the teleprinter and the punch, boxed like the tape displays
+ * above them: these are all the same thing, a piece of the machine's paper
+ * with a label saying which piece it is and how wide it was.
+ */
+.printer-output {
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.6rem;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.printer-head,
+.machine-state-head {
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+}
+
+.printer-output pre {
+    color: var(--ink-strong);
+    max-height: 12rem;
+    max-width: 100%;
+    overflow: auto;
+}
+
+/*
+ * Everything the console prints rather than shows: the registers, the store
+ * and the decimal readout. It is the machine's state rather than its output,
+ * and it is what you go looking for rather than what you watch, so it is put
+ * together in one place and named.
+ */
+.machine-state {
+    border: 1px solid var(--rule);
+    padding: 0.5rem 0.75rem 0.6rem;
+    margin-bottom: 0.6rem;
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.machine-state-head {
+    margin-bottom: 0.4rem;
+}
+
+/* ---- Prompt line ------------------------------------------------------- */
+
+.prompt-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+    border-top: 1px solid var(--rule);
+    padding-top: 0.5rem;
+    color: var(--ink-strong);
+}
+
+.prompt-action {
+    color: var(--ink-strong);
+}
+
+.prompt-action.secondary {
+    color: var(--ink-dim);
+}
+
+.prompt-status {
+    color: var(--accent);
+}
+
+.prompt-status.fault {
+    color: var(--ink-strong);
+    background: var(--error-ink);
+    padding: 0 0.4rem;
+    font-weight: bold;
+}
+
+.prompt-status.running {
+    color: var(--paper);
+    background: var(--accent);
+    padding: 0 0.4rem;
+    font-weight: bold;
+}
+
+.operating-notes {
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    border-left: 3px solid var(--accent);
+    background: #f2f6ef;
+    color: var(--ink-strong);
+}
+
+.prompt-count {
+    margin-left: auto;
+    color: var(--ink-dim);
+}
+
+.cursor {
+    animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+    to {
+        visibility: hidden;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cursor {
+        animation: none;
+    }
+}
+
+/* ---- Options ----------------------------------------------------------- */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(40, 40, 36, 0.55);
+    overflow: auto;
+    padding: 2rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+}
+
+.options-screen {
+    width: min(900px, 100%);
+    margin: 0;
+}
+
+.options-group {
+    border-top: 1px solid var(--rule);
+    padding: 0.4rem 0;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.1rem 0;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.option-button {
+    border: none;
+    text-align: left;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+}
+
+.option-value {
+    margin-left: auto;
+    color: var(--accent);
+}
+
+.options-message {
+    color: var(--accent);
+}
+
+.memory-editor {
+    flex-wrap: wrap;
+}
+
+/* ---- Tape viewer ------------------------------------------------------- */
+
+.tape-viewer {
+    width: min(1180px, 100%);
+    margin: 0;
+}
+
+.viewer-head {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.viewer-head h2 {
+    margin: 0;
+}
+
+.viewer-tabs {
+    display: flex;
+    gap: 0.4rem;
+    margin-right: auto;
+}
+
+.viewer-tabs .active {
+    color: var(--paper);
+    background: var(--ink);
+}
+
+.viewer-note {
+    color: var(--ink-dim);
+    margin: 0.5rem 0;
+    max-width: 90ch;
+}
+
+.viewer-note strong {
+    color: var(--accent);
+}
+
+.viewer-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--ink-dim);
+    margin-bottom: 0.5rem;
+}
+
+.listing {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.9rem;
+}
+
+.listing th {
+    text-align: left;
+    color: var(--ink-strong);
+    border-bottom: 1px solid var(--rule);
+    padding: 0.2rem 0.5rem;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+}
+
+.listing td {
+    padding: 0.1rem 0.5rem;
+    vertical-align: top;
+    white-space: pre;
+}
+
+.listing td.what {
+    white-space: normal;
+    color: var(--ink-dim);
+}
+
+.listing .num {
+    text-align: right;
+    color: var(--ink-dim);
+}
+
+.listing .punches {
+    color: var(--ink-strong);
+    background: var(--panel);
+}
+
+.listing .kind {
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+}
+
+.listing .word {
+    color: var(--accent);
+    font-size: 0.85rem;
+}
+
+.listing .mnemonic-cell {
+    color: var(--ink-strong);
+    font-weight: bold;
+}
+
+/* The primary is read by the machine itself, so set it apart from the rest. */
+.listing .row-primary td.punches {
+    border-left: 3px solid var(--accent);
+}
+
+.listing .row-control td.punches {
+    border-left: 3px solid #b4671b;
+}
+
+.listing .row-heading td {
+    color: var(--ink);
+}
+
+.listing .row-blank td,
+.listing .row-lead-in td {
+    opacity: 0.45;
+}
+
+.unplaced {
+    color: #b4671b;
+}
+
+.data-text {
+    color: var(--ink-strong);
+    background: #f2f6ef;
+    padding: 0.5rem;
+    max-height: 30rem;
+    overflow: auto;
+}
+
+/* ---- Credit ------------------------------------------------------------ */
+
+.credit {
+    color: var(--ink-dim);
+    border-top: 1px solid var(--rule);
+    padding-top: 0.75rem;
+    font-size: 0.85rem;
+}
+
+.credit strong {
+    color: var(--ink);
+}
+
+.tape-comment {
+    color: var(--ink);
+    margin-left: 0.5rem;
+}
+
+/* ---- Punching a tape --------------------------------------------------- */
+
+.tape-editor label {
+    display: flex;
+    flex-direction: column;
+    color: var(--ink-strong);
+}
+
+.tape-editor textarea {
+    font: inherit;
+    color: var(--ink-strong);
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 0.4rem 0.6rem;
+    margin: 0.3rem 0 0;
+    width: 100%;
+    resize: vertical;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+}
+
+/* The way in to Interprogram, under what that section says it is. */
+.tape-launch {
+    margin: 0.6rem 0 1.2rem;
+}
+
+.viewer-mount {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding: 0.4rem 0.6rem;
+    margin: 0.5rem 0;
+    border-left: 3px solid var(--accent);
+    background: #f2f6ef;
+    color: var(--ink-strong);
+}
+
+.prompt-action.active {
+    color: var(--paper);
+    background: var(--ink);
+}
+
+code {
+    color: var(--accent);
+}
+
+/* ---- The tape readers -------------------------------------------------- */
+
+/*
+ * The tape at one end and, at the other, whatever is being worked about it:
+ * the switches, which were down the right hand side of the operating screen,
+ * or the Interprogram narration saying which of them is being automated.
+ */
+.tape-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 0.6rem;
+}
+
+.readers {
+    display: flex;
+    flex-direction: column;
+}
+
+.reader-head {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: var(--ink-dim);
+    white-space: nowrap;
+}
+
+.reader.live .reader-head {
+    color: var(--ink-strong);
+}
+
+/* The lamp that says which reader the console switches have selected. */
+.reader-lamp {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #ddd9cf;
+    border: 1px solid var(--rule);
+}
+
+.reader.live .reader-lamp {
+    background: var(--accent);
+    box-shadow: 0 0 5px var(--accent);
+}
+
+.reader-tape,
+.reader-count {
+    color: var(--ink-dim);
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.tape-strip {
+    display: block;
+    margin: 0.2rem 0;
+}
+
+.reader-selector {
+    color: var(--ink-strong);
+    white-space: nowrap;
+    margin-bottom: 0.3rem;
+}
+
+.reader-selector-label {
+    color: var(--ink-dim);
+}
+
+.reader-pair {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* What a set of scale-32 digits actually comes to. */
+.option-total {
+    color: var(--accent);
+}
+
+/* ---- A tape's walkthrough ---------------------------------------------- */
+
+.walkthrough {
+    border-left: 3px solid var(--accent);
+    background: #f2f6ef;
+    padding: 0.5rem 0.75rem;
+}
+
+.walkthrough p {
+    margin: 0 0 0.4rem;
+}
+
+/*
+ * Both lists of steps: the one on the tape, for working it by hand, and the
+ * one on the Interprogram page, where it is automated.
+ */
+.walkthrough ol,
+.narration-steps {
+    margin: 0;
+    padding-left: 1.4rem;
+}
+
+.walkthrough li {
+    margin-bottom: 0.15rem;
+}
+
+/* What the teleprinter says, set as the machine prints it. */
+.walkthrough-says {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 0 0.3rem;
+    margin-right: 0.5rem;
+}
+
+.walkthrough-does {
+    color: var(--ink-strong);
+}
+
+/*
+ * The row under the read head, and the row already in the input register one
+ * behind it. Same two colours as the marks on the tape strip, so the listing
+ * and the reader can be read together.
+ */
+.listing tr.under-head td {
+    background: #e4f0e4;
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.listing tr.in-register td {
+    background: #f6ece0;
+    box-shadow: inset 3px 0 0 #b4671b;
+}
+
+/* A row the reader cannot read is not blank tape and should not read as a
+   gap in the listing: it is where the reader stops. */
+.listing tr.row-unreadable td {
+    color: #a11;
+}
+
+.listing tr.row-unreadable .kind {
+    font-style: italic;
+}
+
+/* Writing Interprogram. The source box is a tape being typed, so it is set in
+   the same monospace as the listings and given room to hold a whole program. */
+/* Links are page ink like everything else. A browser's blue and purple are
+   from a different century's paperwork than this one. */
+a {
+    color: var(--ink);
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.15em;
+}
+
+a:hover {
+    color: var(--accent);
+}
+
+/*
+ * The machine's displays are what this page shows, and the tube bank alone is
+ * wider than a column of prose, so the page takes the room the console screen
+ * takes. Prose and the source box carry their own measure; see .viewer-note.
+ */
+.interprogram-source {
+    width: 100%;
+    max-width: 80ch;
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 0.6rem;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    color: var(--ink);
+    resize: vertical;
+    tab-size: 4;
+}
+
+.watched-run {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.8rem;
+}
+
+/*
+ * What is being pressed, and why. This sits where the operations menu sits at
+ * the console, because it is the same column of the display: the switches an
+ * operator would be reaching for, worked for them instead.
+ */
+.narration {
+    max-width: 44ch;
+}
+
+/*
+ * A step reads as where the machine is: the one being worked is in full ink
+ * and the ones behind it fade, so the prose takes its colour from the step
+ * rather than carrying one of its own.
+ */
+.narration-steps {
+    color: var(--ink-dim);
+}
+
+.narration-step {
+    margin-bottom: 0.3rem;
+}
+
+/* Done with: the machine has been carried past this one. */
+.narration-step.done {
+    opacity: 0.55;
+}
+
+.narration-step.current {
+    color: var(--ink-strong);
+}
+
+.narration-step.current::marker {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.narration-now {
+    margin: 0.4rem 0 0;
+    color: var(--accent);
+}
+
+/* The choice of what to show, on the prompt line. */
+.mode-control {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.mode-label {
+    color: var(--ink-dim);
+}
+
+/*
+ * The right hand end of the prompt line: how far the machine has got, and the
+ * thing you press. Away from the two buttons that only choose what is shown.
+ */
+.prompt-right {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.prompt-right .prompt-count {
+    margin-left: 0;
+}
+
+/* Anything the compiler said that was not an instruction to the operator. */
+.interprogram-messages {
+    margin: 0.8rem 0;
+    border-left: 3px solid var(--error-ink);
+    padding-left: 0.6rem;
+}
+
+.interprogram-messages pre {
+    color: var(--error-ink);
+    margin: 0;
+}
+
+.csirac-logo {
+    height: 6rem;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+}

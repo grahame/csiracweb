@@ -1,0 +1,486 @@
+ 0  0		0       PRIMARY
+17 18   	0	D  PD
+18 25		1	SD CS
+22  5		2	HU PA
+18 25		3	SD CS
+23 24		4	S  PS
+21  5		5	HL PA
+11 24		6	B  PS
+14 26		7	C  PK
+ 9  0		8	CA M
+24 15		9	PE PC
+ 1 17		10	I  D
+17 21		11	D  HL
+18 25		12	SD CS
+20 23		13	Z  S
+22 14		14	HU PS
+17 19		15	D  SD
+20 22		16	Z  HU
+20 23		17	Z  S
+ 0  0		.
+ 0 14 Y		. trigger - load from 14	CONTROL
+22 24X    	14      HU PS	 S += H * P11
+ 0 24   	.
+ 0  5X		15	M  PA    A += M[24]
+ 0 23   	.
+ 0  5X		16	M  PA	 A += M[23]
+ 0 15   	.
+ 0  5X		17	M  PA	 A += M[15]
+ 0 19   	.
+ 9  0X		18	CA M	 M[19] = A, A = 0
+31 31X  	19	PS T	 halt
+31 21   	.
+26 26X		20	K  PK
+ 0 11   	.
+26 11X		21	K  B
+ 0 10   	.
+26 23X		22      K  S
+13 27X  	23      RB MA
+31  8   	.
+12 14X		24      R  C
+                .
+ 2  0           .
+ 0  0 Y         set load address to 2,0 == 64	Sub2
+ 0  2           .
+ 0  1 Y         set base 2 = load address = 64
+ 0  1           .
+ 0  1 Y         set base 1 = load address = 64
+   15           .
+24 18X          64 0,0	PE PD	D15 += P11	adjust return address
+ 8              .
+26 14X          65 0,1	K  C	C = 8
+ 6 16X          66 0,2	HA SC	C -= A/2
+ 4 12X          67 0,3	A  XB	A,B = A * C	loop:
+12  5X          68 0,4	R  PA	A += sign1(B)
+ 9 17X          69 0,5	CA D	D0 = A, A=0
+14 12X          70 0,6	C  XB	A,B = C * C
+ 8              .
+26 15X          71 0,7	K  PC	C += 8
+ 4 12X          72 0,8	A  XB	A.B = A * C
+12  5X          73 0,9	R  PA	A += sign1(B)
+10 21X          74 0,10	ZA HL	H = A != 0
+ 9 14X          75 0,11	CA C    C = A, A = 0
+17  4X          76 0,12	D  A	A = D0
+22 24X          77 0,13	HU PS	S += H * P11	
+   15           .
+17 23X          78 0,14	D  S	S = D15		return
+ 0  1           .
+ 0  2 Y         modify next by base 1
+    3           .
+26 23X          79 0,15	K  S	goto 0,3	loop back to 0,3
+ 0  0           .
+ 3  0           .
+ 0  0 Y         set load address 3,0 = 96	Sub3
+ 0  3           .
+ 0  1 Y         set base 3 = current = 96
+ 0  1           .
+ 0  1 Y         set base 1 = current
+ 4 14X          96   1,0	A  C
+ 9 12X          97   1,1	CA XB
+14 17X          98   1,2	C  D
+ 9 14X          99   1,3	CA C
+ 0  1           .
+ 0  2 Y         mod 1
+   24           .
+ 0 12X          100  1,4	M  XB
+ 0  1           .
+ 0  2 Y         mod 1
+   23           .
+ 0  5X          101  1,5	M  PA
+ 9 12X          102  1,6	CA XB
+ 0  1           .
+ 0  2 Y         mod 1
+   22           .
+ 0  5X          103  1,7	M  PA
+ 9 12X          104  1,8	CA XB
+ 0  1           .
+ 0  2 Y         mod 1
+   21           .
+ 0  5X          105  1,9	M  PA
+ 9 12X          106  1,10	CA XB
+ 0  1           .
+ 0  2 Y         mod 1
+   20           .
+ 0  5X          107  1,11	M  PA
+ 9 12X          108  1,12	CA XB
+ 0  1           .
+ 0  2 Y         mod 1
+   19           .
+ 0  5X          109  1,13	M  PA
+17 14X          110  1,14	D  C
+ 9 12X          111  1,15	CA XB
+12  5X          112  1,16	R  PA
+   15           .
+24 18X          113  1,17	PE PD
+   15           .
+17 23X		114  1,18	D  S
+10  5           .
+30 12X          115  1,19	+333772
+ 1 22           .
+11 12X          116  1,20	+55660
+   23           .
+24 21X          117  1,21	+24341
+   19           .
+27  3X          118  1,22	+20323
+31 24           .
+ 3 13X          119  1,23	-8083
+   31           .
+13  0X          120  1,24	+32160
+ 0  0           .
+ 4  0           .
+ 0  0 Y         set load = 4,0 == 128 Sub4
+ 0  4           .
+ 0  1 Y         set base 4 = 128
+ 0  1           .
+ 0  1 Y         set base 1 = 128
+ 0  1           .
+ 0  2 Y         mod 1
+   24           .
+ 0 14X          128  0,0	M  C		C = M[0,24]
+31  5X          129  0,1	PS PA		A += 1
+ 9 12X          130  0,2	CA XB		A,B = A * C
+14  5X          131  0,3	C  PA		A += C
+    3           .
+31 13X          132  0,4	PS L		A,B = (A,B) << 1
+ 0  1           .
+ 0  2 Y         mod 1
+ 1  8           .
+ 0  7X          133  0,5	M  CA		C &= M[1,8]
+ 0  1           .
+ 0  2 Y         mod 1
+ 1  8           .
+ 0 14X          134  0,6	M  C		C = M[1,8]
+11 15X          135  0,7	B  PC		C += B
+16              .
+14 11X          136  0,8	C  B		B = C
+10 25X          137  0,9	ZA CS		skip if A != 0
+31 26X          138  0,10	PS PK		K = 1
+16  7           .
+26 22X          139  0,11	K  HU		HU = 519/520
+26 16           .
+26 17X          140  0,12	K  D		D = 848
+21 18X          141  0,13	HL PD		D0 += HL
+17 22X          142  0,14	D  HU		HU = D0
+22 25X          143  0,15	HU CS		skip if HU != 0
+ 0 10X          144  0,16	M  P		hoot M[0]
+18 25X          145  0,17	SD CS		skip if D0 -ve
+    2           .    
+26 24X          146  0,18	K  PS		S += 2
+10 25X          147  0,19	ZA CS		skip if A != 0
+   12           .   
+26  4X          148  0,20	K  A		A = 12
+ 4 21X          149  0,21	A  HL		HL = A
+22 26X          150  0,22	HU PK		K = HU
+ 0  1           .
+ 0  2 Y         .mod 1
+    4           .   
+ 0 25X          151  0,23	M  CS		skip if M[1,4+K] -ve
+14 12           .  
+25 19X          152  0,24	PL SD		D -= 1
+   16           . 
+26  5X          153  0,25	K  PA		A += 16
+ 9  3X          154  0,26	CA OP		Punch A, A=0
+18 25X          155  0,27	SD CS		skip if D0 -ve
+   28           .
+26  3X          156  0,28	K  OP		Punch 28	(' '?)
+18 25X          157  0,29	SD CS		skip if D0 -ve
+   23           .
+26 26X          158  0,30	K  PK		K = 23
+ 0  1           .
+ 0  2 Y         .mod 1
+   16           .
+ 0 14X          159  0,31	M  C		C = M[16+K]
+13 12X          160  1,0	RB XB		A,B = (B>>1) * C
+17 18X          161  1,1	D  PD		D += D
+17 21X          162  1,2	D  HL		HL = D0
+21 24X          163  1,3	HL PS		S += HL
+31  9           .  
+26 24X          164  1,4	K  PS		S += -23    (1,14)
+   15           .  
+24 18X          165  1,5	PE PD		D15 += P11
+   15           .
+17 23X          166  1,6	D  S		return
+ 0  6X          167  1,7	+6
+ 0  3X          168  1,8	+3
+ 0  0           .
+ 6  0           .
+ 0  0 Y         set load=6,0 = 192	Sub5
+ 0  5           .
+ 0  1 Y         .set base 5=192
+ 0  1           .
+ 0  1 Y         .set base 1=192
+ 8              .
+26  6X          192  0,0	K  SA
+ 5 25X          193  0,1	SA CS
+ 9  6X          194  0,2	CA SA
+ 8              .
+26  5X          195  0,3	K  PA
+ 4 17X          196  0,4	A  D
+ 4 14X          197  0,5	A  C
+ 9 12X          198  0,6	CA XB
+31 13X          199  0,7	PS L
+12  5X          200  0,8	R  PA
+ 9 14X          201  0,9	CA C
+ 0  1           .
+ 0  2 Y         .mod 1
+   27           .    
+ 0 12X          202  0,10	M  XB
+ 0  1           .  
+ 0  2 Y         .mod 1
+   26           .    
+ 0  5X          203  0,11	M  PA
+ 9 12X          204  0,12	CA XB
+ 0  1           .
+ 0  2 Y         .mod 1
+   25           .    
+ 0  5X          205  0,13	M  PA
+ 9 12X          206  0,14	CA XB
+ 0  1           .
+ 0  2 Y         .mod 1
+   24           .    
+ 0  5X          207  0,15	M  PA
+14  6X          208  0,16	C  SA
+17 14X          209  0,17	D  C
+ 9 12X          210  0,18	CA XB
+14  5X          211  0,19	C  PA
+31 13X          212  0,20	PS L
+12  5X          213  0,21	R  PA
+ 0 15           .    
+24 18X          214  0,22	PE PD
+ 0 15           .    
+17 23X          215  0,23	D  S
+ 9  4           .    
+ 7 29X          216  0,24	+299261
+27 10           .    
+18 15X          217  0,25	-153009
+ 5  2           .    
+25 10X          218  0,26	+166698
+31 14           .    
+ 4  6X          219  0,27	-18298
+ 0  0           .
+ 8  0           .
+ 0  0 Y         .set load=8,0=256
+ 0  6           .
+ 0  1 Y         .set base 6 = 256
+ 0  1           .
+ 0  1 Y         .set base 1 = 256	Sub6
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  7           .
+ 4  0X          256  0,0	A  M	M[0,7] = A	
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  8           .
+ 5  0X          257  0,1	SA M    M[0,8] = sign(A)
+ 5 25X          258  0,2	SA CS   skip if -ne
+ 9  6X          259  0,3	CA SA   A = -A
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  6           .
+ 0 14X          260  0,4	M  C	C = M[1,6]
+ 4 15X          261  0,5	A PC	C += A
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  9           .
+15  0X          262  0,6	SC M	M[1,9] = sign(C)
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  7           .
+ 0  4X          263  0,7	M  A	A = M[1,7]
+15 25X          264  0,8	SC CS	skip if C -ve
+   14           .
+26 24X          265  0,9	K  PS	S += 14   (0,24?)
+14 16X          266  0,10	C  SC	C -= C   (C = 0)
+ 4 16X          267  0,11	A  SC	C -= A	 C = -A
+ 9 12X          268  0,12	CA XB	A,B = A * C
+31  5X          269  0,13	PS PA	A += P20
+12  5X          270  0,14	R  PA	A += sign1(B)
+   15           .
+23 17X          271  0,15	S  D    D15 = S
+ 0  2           .
+ 0  2 Y         .mod 2
+26 23X          272  0,16	K  S*	call Sub2
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  6           .
+ 0 14X          273  0,17	M  C    C = M[1,6]
+ 9 12X          274  0,18	CA XB   A,B = A * C
+12  5X          275  0,19	R  PA   A += sign1(B) 
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  8           .
+ 0 25X          276  0,20	M  CS	skip if N[1m8] is -ve
+ 9  6X          277  0,21	CA SA	A = -A
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  7           .
+ 0 12X          278  0,22	M  XB	A,B = M[1,7] * C
+12  5X          279  0,23	R  PA   A += sign1(B)
+   15           .
+23 17X          280  0,24	S   D	D15 = S
+ 0  3           .
+ 0  2 Y         .mod 3
+26 23X          281  0,25	X   S*  call Sub3
+ 6  4X          282  0,26	HA  A   A = A/2
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  9           .
+ 0 25X          283  0,27	M  CS   skip if M[1,9] -ve
+    3           .
+26 24X          284  0,28	K  PS   S += 3   (1,0)
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1  8           .
+ 0 25X          285  0,29	M  CS   skip if M[1,8] -ve
+25 26X          286  0,30	PL PK	K = P1
+28              .
+26  5X          287  0,31	K  PA*	A +/-= 28    (+ if M[1,8] -ve, - if +ve)
+    1           .
+18 25X          288  1,0	SD CS	skip if sign(D1) -ve
+    2           .
+26 24X          289  1,1	K  PS	S += 2   (1,4)
+31  5X          290  1,2	PS PA   A += P20
+ 9  6X          291  1,3	CA SA   A -= A    (A = 0)
+   14           .
+24 18X          292  1,4	PE PD	D14 += P11
+   14           .
+17 23X          293  1,5	D  S    S = D14		return
+11 10           .
+ 1  8X          294  1,6	370728
+31 31X          295  1,7	1023
+31 31X          296  1,8	1023
+31 31X          297  1,9	1023
+                .
+10  0           .
+ 0  0 Y         .set load=10,0=320
+ 0  1           .
+ 0  1 Y         .set base 1=320 (Main Program?)
+31 31X          320  0,0	PS T Halt
+   27           .
+26  3X          321  0,1	K OP	Punch FS
+   29           .
+26  3X          322  0,2        K OP	Punch LF
+   11           .
+26 17X          323  0,3        K D     D[11] = 11
+    6           .       
+31 17X          324  0,4        PS D	D[6] = P20
+    6           .
+17  4X          325  0,5	D  A	A = D[6]
+   29           .
+26  3X          326  0,6        K OP	Punch LF
+   15           .
+23 17X          327  0,7	S  D	D15 = S
+ 0  5           .
+ 0  2 Y         .mod 5
+    1           .
+26 23X          328  0,8	K  S*	call sub5+1
+    1           .
+ 9 17X          329  0,9        CA D	D[1]=A, A=0
+    6           .
+17  4X          330  0,10	D  A	A=D[6]
+   15           .
+23 17X          331  0,11	S  D	D[15]=S
+ 0  4           .
+ 0  2 Y         .mod 4
+26 23X          332  0,12	K  S*	call sub4
+    6           .
+17  4X          333  0,13	D  A    A = D[6]
+   15           .
+23 17X          334  0,14	S  D	D[15]=S
+ 0  5           .
+ 0  2 Y         .mod 5
+26 23X          335  0,15       K  S*   call sub5
+   28           .
+26  3X          336  0,16	K OP    Punch LF
+   14           .
+23 17X          337  0,17       S  D    D[14] = S
+ 0  6           .
+ 0  2 Y         .mod 6
+26 23X          338  0,18	K  S*	call sub6
+   15           .
+23 17X          339  0,19	S  D	D[15] = S
+ 0  4           .
+ 0  2 Y         .mod 4
+26 23X          340  0,20	K  S*	call sub4
+ 0  1           .
+ 0  2 Y         .mod 1
+ 1 21           .
+ 0  4X          341  0,21	M  A    A = M[R1,21]
+    6           .
+ 9 18X          342  0,22	CA PD	D6 += A, A=0	
+   11           .
+24 19X          343  0,23	PE SD	D11 -= P11
+   11           .
+18 25X          344  0,24	SD CS	skip if -ve
+31 11           .
+26 24X          345  0,25	K  PS	S += -21? (0,5?)
+    7           .
+26  4X          346  0,26	K   A   A = 7
+   11           .
+ 9 17X          347  0,27	CA  D	D11=A, A=0
+   29           .
+26  3X          348  0,28	K  OP	Punch LF
+    6           .
+17 19X          349  0,29	D  SD   D6 -= D6 (D6 = 0)
+    6           .
+17  4X          350  0,30	D  A	A = D6
+   29           .
+26  3X          351  0,31	K  OP	Punch LF
+   15           .
+23 17X          352  1,0	S  D	D15 = S
+ 0  5           .
+ 0  2 Y         .mod 5
+    1           .
+26 23X          353  1,1	K  S*	call Sub5+1
+    1           .
+ 9 17X          354  1,2	CA  D	D1 = A
+    6           .
+17  4X          355  1,3        D  A	A = D6
+   15           .
+23 17X          356  1.4	S  D	D15 = S
+ 0  4           .
+ 0  2 Y         .mod 4
+26 23X          357  1,5	K  S*	call Sub4
+    6           .
+17  4X          358  1,6	D  A    A = D6
+   15           .
+23 17X          359  1,7	S  D	D15 = S
+ 0  5           .
+ 0  2 Y         .mod 5
+26 23X          360  1,8	K  S*   call Sub5
+   28           .
+26  3X          361  1,9	K OP	Punch Sp
+   14           .
+23 17X          362  1,10	S  D    D14 = S
+ 0  6           .
+ 0  2 Y         .mod 6
+26 23X          363  1,11	K  S*	call Sub6
+   15           .
+23 17X          364  1,12	S  D	D15 = S
+ 0  4           .
+ 0  2 Y         .mod 4
+26 23X          365  1,13	K  S	call Sub4
+ 4              .
+26  4X          366  1,14	K  A	A = 4
+    6           .
+ 9 18X          367  1,15	CA PD	D6 += A, A=0
+   11           .
+24 19X          368  1,16	PE SD	D11 -= P11
+   11           .
+18 25X          369  1,17	SD CS	Skip if -ve
+31 11           .
+26 24X          370  1,18	K  PS	S += -21 (0,30?)
+   17           .
+26  3X          371  1,19	K  OP   Punch 17 (k?)
+ 0  1           .
+ 0  2 Y         .mod 1
+26 23X          372  1,20	K  S*	Goto 0,0
+ 2 21           .
+10 21X          373  1,21	ZA HL	HL = odd(A) ?
+ 0  1           .
+ 0  2 Y         .mod 1
+ 0  6 Y         .Go
+26 23X          .		K  S*	Goto 0,0
+ 0  0           .
+
+
