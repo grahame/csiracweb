@@ -686,8 +686,6 @@ describe("choosing the tape, with the reader following it", () => {
         await settle();
     }
 
-    const readout = () => document.querySelector(".menu-readout")?.textContent ?? "";
-
     it("moves the reader selector to 5 HOLE for a 5-hole data tape", async () => {
         const user = userEvent.setup();
         // ITest.cvt is 12-hole and ITest.dat is 5-hole, so the tape decides.

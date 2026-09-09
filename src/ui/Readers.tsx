@@ -38,9 +38,6 @@ export function Readers({ view, programName, programText, dataName, dataText }: 
     const program = useMemo(() => describeTape(programText), [programText]);
     const data = useMemo(() => describeTape(dataText), [dataText]);
 
-    // Where the reader selector stands, which the tape has decided.
-    const selectorHoles = view.reader5Hole ? 5 : 12;
-
     return (
         <div className="readers">
             <div className="reader-pair">
