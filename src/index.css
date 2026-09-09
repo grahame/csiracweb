@@ -100,13 +100,23 @@ body {
     margin: 0;
     background: #e4e0d6;
     color: var(--ink);
-    display: flex;
-    justify-content: center;
 }
 
+/*
+ * Centred on a margin rather than by centring a flex item.
+ *
+ * A flex item does not shrink below the width of its contents, so on a phone
+ * anything inside that would not fit — a select carrying a long tape title, a
+ * file input, a row of registers — made the whole page wider than the screen,
+ * and centring it then hung the overflow off both edges at once, where the
+ * left hand end could not even be scrolled to. Centring on the margin lets the
+ * page be exactly as wide as the screen and leaves whatever cannot fit to the
+ * boxes that hold it.
+ */
 .app {
     width: 100%;
     max-width: 1120px;
+    margin: 0 auto;
     padding: 1rem;
 }
 
@@ -249,6 +259,16 @@ pre {
     align-items: start;
 }
 
+/*
+ * ... and the second column is allowed to be narrower than what is in it. A
+ * grid track holds its contents' width by default, and a data tape offered
+ * under its own title is a wide thing to hold: without this the row sets the
+ * width of the page and a phone gets a column of clipped text.
+ */
+.tape-list li > * {
+    min-width: 0;
+}
+
 /* Fill the column, so the buttons line up and a name never wraps out of one. */
 .tape-list li > button {
     width: 100%;
@@ -276,15 +296,30 @@ pre {
     align-items: center;
 }
 
+/* A file input is as wide as the name of the file in it; it may shrink. */
+.tape-upload input[type="file"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+}
+
 .tape-upload label {
+    min-width: 0;
     display: flex;
     align-items: center;
 }
 
 /* ---- Initial settings -------------------------------------------------- */
 
+/*
+ * The switch panel as the console printed it. It is set out in columns, so it
+ * keeps them: on a narrow screen it scrolls sideways in its own box rather
+ * than wrapping every line into the one below and losing the layout.
+ */
 .settings-text {
     color: var(--ink);
+    white-space: pre;
+    overflow-x: auto;
 }
 
 /* ---- Console ----------------------------------------------------------- */
@@ -532,6 +567,18 @@ pre {
     display: flex;
     justify-content: center;
     align-items: start;
+}
+
+/*
+ * The panels the overlay holds may be narrower than what is in them, for the
+ * same reason the page may be: a flex item holds the width of its contents
+ * unless it is told it need not, and a listing of a tape is wider than a
+ * phone. Without this the panel hangs off both edges of the screen and the
+ * left hand end of it cannot be scrolled to.
+ */
+.options-screen,
+.tape-viewer {
+    min-width: 0;
 }
 
 .options-screen {
@@ -1051,4 +1098,77 @@ a:hover {
     height: 6rem;
     padding: 0 0 0 0;
     margin: 0 0 0 0;
+}
+
+/* ---- Small screens ----------------------------------------------------- */
+
+/*
+ * A phone held upright is about four hundred points across, which is a third
+ * of the width the console was laid out for. Nothing is taken away here: the
+ * things that were side by side are put one under the other, and the paper the
+ * machine prints keeps its own width and scrolls inside its box, as it does on
+ * any screen too narrow for it.
+ */
+@media (max-width: 40rem) {
+    .app {
+        padding: 0.5rem;
+    }
+
+    .screen {
+        padding: 0.75rem;
+    }
+
+    /* The logo is a heading here rather than a nameplate across the top. */
+    .csirac-logo {
+        height: 4rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    /*
+     * The tape and what it is, one under the other. Across the page there is
+     * no room for both: the name takes half the width and leaves the notes in
+     * a ribbon a few words wide.
+     */
+    .tape-list li {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+
+    .tape-list li > button {
+        width: auto;
+        justify-self: start;
+    }
+
+    /* A data tape is chosen on a line of its own, and gets the whole of it. */
+    .tape-data {
+        display: block;
+    }
+
+    .tape-data select {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .tape-upload label {
+        flex-direction: column;
+        align-items: start;
+        gap: 0.2rem;
+    }
+
+    .tape-upload input {
+        margin-left: 0;
+    }
+
+    /*
+     * A tape listing is a table of columns that mean what they line up with,
+     * so it keeps them and scrolls sideways in its own box rather than being
+     * squeezed until the words break.
+     */
+    .listing {
+        display: block;
+        overflow-x: auto;
+    }
 }
