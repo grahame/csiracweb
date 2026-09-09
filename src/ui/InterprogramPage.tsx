@@ -223,8 +223,7 @@ export function InterprogramPage() {
             />
 
             <p className="viewer-note">
-                Punched as typed, in capitals, on 5-hole tape. Anything after <code>#</code> is a comment. Results are{" "}
-                <strong>punched</strong>, which is where Interprogram puts them.
+                Your program will be punched, in capitals, on 5-hole tape. Anything after <code>#</code> is a comment.
             </p>
 
             <div className="prompt-line">
