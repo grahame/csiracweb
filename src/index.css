@@ -570,15 +570,22 @@ pre {
 }
 
 /*
- * The panels the overlay holds may be narrower than what is in them, for the
- * same reason the page may be: a flex item holds the width of its contents
- * unless it is told it need not, and a listing of a tape is wider than a
- * phone. Without this the panel hangs off both edges of the screen and the
- * left hand end of it cannot be scrolled to.
+ * The panels the overlay holds are a piece of paper laid over the console:
+ * the same paper the page is on, ruled the same way, so that what is under
+ * them is dimmed and covered rather than read through.
+ *
+ * They may also be narrower than what is in them, for the same reason the page
+ * may be: a flex item holds the width of its contents unless it is told it
+ * need not, and a listing of a tape is wider than a phone. Without that the
+ * panel hangs off both edges of the screen and the left hand end of it cannot
+ * be scrolled to.
  */
 .options-screen,
 .tape-viewer {
     min-width: 0;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    padding: 1rem 1.25rem;
 }
 
 .options-screen {
@@ -1114,8 +1121,15 @@ a:hover {
         padding: 0.5rem;
     }
 
-    .screen {
+    .screen,
+    .options-screen,
+    .tape-viewer {
         padding: 0.75rem;
+    }
+
+    /* The dimmed console around a panel is worth less than the panel is. */
+    .overlay {
+        padding: 1rem 0.5rem;
     }
 
     /* The logo is a heading here rather than a nameplate across the top. */
@@ -1170,5 +1184,15 @@ a:hover {
     .listing {
         display: block;
         overflow-x: auto;
+    }
+
+    /*
+     * With the listing scrolling, what a row does is read by scrolling to it
+     * rather than by wrapping it into a column a few words wide, which set
+     * every row as tall as its longest sentence and left the punches stranded
+     * at the top of an inch of white.
+     */
+    .listing td.what {
+        white-space: nowrap;
     }
 }
