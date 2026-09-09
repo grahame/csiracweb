@@ -178,7 +178,10 @@ function Credit() {
             <p>
                 This emulator is a port of <strong>CSIRACEM</strong>, written in Turbo Pascal by{" "}
                 <strong>John W. Spencer</strong>, who used CSIRAC from 1959 to 1964. He kindly provided the code for his
-                emulator and gave permission for it to be ported to the web.
+                emulator and gave permission for it to be ported to the web. Claude Code was used substantially in
+                developing this page, primarily in taking the Turbo Pascal emulator and porting it to Typescript. Some
+                human code review of the generated code has been carried out, but this has not been by any means
+                exhaustive.
             </p>
         </footer>
     );

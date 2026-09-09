@@ -116,7 +116,7 @@ export const CSIRAC_TAPES = [
         notes:
             "The program that played tunes on the loudspeaker, dated 1998 when the CSIRAC " +
             "music was reconstructed. It reads its tune from a data tape whose format has not " +
-            "been worked out, so none is bundled; see docs/player.md for what is known.",
+            "been worked out – if you have an example file, please email frgrahame@bowland.au",
     },
 ] as const;
 
@@ -275,27 +275,22 @@ export function TapePicker({ onMount }: TapePickerProps) {
                 <a href="https://cis.unimelb.edu.au/about/history/csirac" target="_blank">
                     intact in a museum.
                 </a>{" "}
-                This page lets you load up and run programs on an emulated version of CSIRAC, and{ " "}
+                This page lets you load up and run programs on an emulated version of CSIRAC, and{" "}
                 <Link to="/interprogram">program in Australia's first domestically produced programming language</Link>,
                 G. W. Hill's Interprogram.
             </p>
-
             <p>
                 Various{" "}
                 <a href="https://cis.unimelb.edu.au/about/history/csirac/emulator" target="_blank">
                     emulators for CSIRAC have been developed
                 </a>
                 . John W. Spencer developed an emulator in Turbo Pascal 6, and in 2011 – some fifteen years ago! – was
-                kind enough to share the source code with Grahame Bowland, the author of this page. John's 'CSIRACEM'
-                program required a DOS machine or emulator to run, which has become increasingly difficult. This page
-                takes John Spencer's work and makes it available on the web in a much more accessible form, without
-                needing anything more than a web browser. It also draws upon some CSIRAC tape images which were included
-                with Bill Purvis' 2021 Java port of the emulator, but does not otherwise rely on that work.
-            </p>
-            <p>
-                Claude Code was used substantially in developing this page, primarily in taking the Turbo Pascal
-                emulator and porting it to Typescript. Some human code review of the generated code has been carried
-                out, but this has not been by any means exhaustive.
+                kind enough to share the source code with <a href="https://grahame.dev/">Grahame Bowland</a>, the author
+                of this page. John's 'CSIRACEM' program required a DOS machine or emulator to run, which has become
+                increasingly difficult. This page takes John Spencer's work and makes it available on the web in a much
+                more accessible form, without needing anything more than a web browser. It also draws upon some CSIRAC
+                tape images which were included with Bill Purvis' 2021 Java port of the emulator, but does not otherwise
+                rely on that work.
             </p>
 
             <p></p>
