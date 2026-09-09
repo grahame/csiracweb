@@ -102,6 +102,34 @@ export const COMPILER_TAPE_NAME = "InterProgram.cvt";
 export const SOURCE_TAPE_NAME = "source";
 
 /**
+ * The example sources that came with the compiler tape.
+ *
+ * These are tapes rather than typed sources: each is a whole session, the
+ * program and then the data it reads, punched as it was in 1960 and carrying
+ * the blank tape and erase codes that go with that — which is why they are
+ * left alone by `asDataTape`. The titles are the tapes' own `(1) TITLE` lines,
+ * quoted here so that a list of them can be shown before any of them has been
+ * fetched; `interprogram.test.ts` checks that they still say what the tapes
+ * say.
+ */
+export const INTERPROGRAM_EXAMPLES = [
+    { name: "Ex1.dat", title: "ALPHA = BETA - 27.394 + A(3).(X/Y)" },
+    { name: "Ex2.dat", title: "INTEREST CALC" },
+    { name: "Ex2a.dat", title: "OUTPUT OF NUMBERS" },
+    { name: "Ex3.dat", title: "LOG(X+IY)=U+IV WHERE  U=LOG(SQRT(X*X+Y*Y)) & V=ARCTAN Y/X" },
+    { name: "Ex4.dat", title: "EXAMPLE OF OUTPUT, LAYOUT AND FUNCTION FORMATION" },
+] as const;
+
+/**
+ * How an example is named where it is offered: the tape's number, and what it
+ * is. The file name alone says nothing about which of the five it is, and the
+ * title alone loses the label written on the tape.
+ */
+export function exampleLabel({ name, title }: { name: string; title: string }): string {
+    return `${name} — ${title}`;
+}
+
+/**
  * One step of the console procedure: what is worked at the console, and then a
  * press of RETURN to set the machine going again.
  *
@@ -318,6 +346,10 @@ function runToTheEnd(
  * Three things are done to it, none of which an operator would have thought
  * about, because they are properties of tape rather than of the language.
  *
+ * None of them is done to a source that is already a tape. An `Ex` tape put
+ * into the editor arrives with its blank tape and its erase codes already
+ * punched, and the three would spoil every one of them: see `alreadyPunched`.
+ *
  * It is put into upper case. A Flexowriter had no lower case, and in a tape
  * file the lower case letters are the reader's own codes rather than
  * characters — `b` is blank tape, `l` and `f` the shifts — so a `b` typed in a
@@ -331,23 +363,45 @@ function runToTheEnd(
  * its place the run dies part way through the first pass with the reader off
  * the end of the tape and nothing punched at all.
  *
- * Then blank tape is added at the end. A real tape had a trailer, and the
- * reader throws when it runs off the end rather than reading blank, so without
- * one a program that reads a little too far takes the whole run down with it.
+ * Then blank tape is added at the end, which is the one thing done to every
+ * source either way: see `withTrailer`.
  */
 export function asDataTape(source: string): string {
-    const lines = source
-        .replace(/\r\n|\r/g, "\n")
-        .toUpperCase()
-        .split("\n");
+    const typed = source.replace(/\r\n|\r/g, "\n").split("\n");
+    if (alreadyPunched(typed)) return withTrailer(typed);
+
+    const lines = typed.map((line) => line.toUpperCase());
 
     // The title is copied to the punch until blank tape ends it. Putting the
     // blank at the head of the following line is where the Ex tapes carry it.
     const title = lines.findIndex((line) => /\(\s*1\s*\)/.test(line) && /TITLE/.test(line));
     const after = title === -1 ? 1 : title + 1;
-    const withBlank = [...lines.slice(0, after), BLANK_TAPE + (lines[after] ?? ""), ...lines.slice(after + 1)];
 
-    return [...withBlank, ...Array<string>(64).fill(BLANK_TAPE.repeat(12))].join("\r\n");
+    return withTrailer([...lines.slice(0, after), BLANK_TAPE + (lines[after] ?? ""), ...lines.slice(after + 1)]);
+}
+
+/**
+ * Whether the source in hand is a tape rather than something typed.
+ *
+ * The blank tape after the title is the mark of one, because it is the thing
+ * nobody types and every working tape carries. A source that has it has been
+ * punched already — it came off the shelf, or it was loaded into the editor
+ * from a tape that did — and everything below this line would damage it: the
+ * upper case would turn its `b`, `e` and `l` codes into the letters B, E and
+ * L, and a second run of blank tape after the title is not what any of the
+ * `Ex` tapes carry.
+ */
+function alreadyPunched(lines: readonly string[]): boolean {
+    return lines.some((line) => line.startsWith(BLANK_TAPE));
+}
+
+/**
+ * Blank tape at the end. A real tape had a trailer, and the reader throws when
+ * it runs off the end rather than reading blank, so without one a program that
+ * reads a little too far takes the whole run down with it.
+ */
+function withTrailer(lines: readonly string[]): string {
+    return [...lines, ...Array<string>(64).fill(BLANK_TAPE.repeat(12))].join("\r\n");
 }
 
 /** Five rows of blank tape, written the way a tape file spells them. */

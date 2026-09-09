@@ -126,7 +126,7 @@ export function TapeViewer({
                     <span>The tape has been altered.</span>
                     <button
                         type="button"
-                        className="prompt-action"
+                        className="prompt-action primary"
                         onClick={() =>
                             onMount(
                                 { name: programName || "tape.cvt", text: program },

@@ -22,30 +22,32 @@ import CsiracLogo from "../csirac-traced.svg";
 export function App() {
     return (
         <div className="app">
-        <div className="screen">
-          <a href="/csirac/"><img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" /></a>
-            <Routes>
-                <Route path="/" element={<PickerScreen />} />
+            <div className="screen">
+                <a href="/csirac/">
+                    <img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" />
+                </a>
+                <Routes>
+                    <Route path="/" element={<PickerScreen />} />
 
-                {/* Writing Interprogram wants none of the machine's state: no tape in
+                    {/* Writing Interprogram wants none of the machine's state: no tape in
                     the reader, no switches, nothing to carry between screens. It is a
                     page of its own for that reason. */}
-                <Route path="/interprogram" element={<InterprogramPage />} />
+                    <Route path="/interprogram" element={<InterprogramPage />} />
 
-                <Route path="/settings" element={<SettingsScreen />}>
-                    <Route path="options" element={<OptionsOverlay />} />
-                    <Route path="tape" element={<TapeOverlay />} />
-                </Route>
+                    <Route path="/settings" element={<SettingsScreen />}>
+                        <Route path="options" element={<OptionsOverlay />} />
+                        <Route path="tape" element={<TapeOverlay />} />
+                    </Route>
 
-                <Route path="/console" element={<ConsoleScreen />}>
-                    <Route path="options" element={<OptionsOverlay />} />
-                    <Route path="tape" element={<TapeOverlay />} />
-                </Route>
+                    <Route path="/console" element={<ConsoleScreen />}>
+                        <Route path="options" element={<OptionsOverlay />} />
+                        <Route path="tape" element={<TapeOverlay />} />
+                    </Route>
 
-                {/* Anything else, including a stale link, goes back to the reader. */}
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        </div>
+                    {/* Anything else, including a stale link, goes back to the reader. */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </div>
 
             <Credit />
         </div>
@@ -186,6 +188,9 @@ function Credit() {
                 developing this page, primarily in taking the Turbo Pascal emulator and porting it to Typescript. Some
                 human code review of the generated code has been carried out, but this has not been by any means
                 exhaustive.
+            </p>
+            <p>
+                <a href="https://github.com/grahame/csiracweb">source code on github</a>
             </p>
         </footer>
     );

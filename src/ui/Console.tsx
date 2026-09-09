@@ -65,10 +65,13 @@ export function Console({ controller, onOptions, onTapes, onExit }: ConsoleProps
                         <button type="button" className="prompt-action" title="Press T" onClick={onTapes}>
                             View or edit the tape
                         </button>
+                        {/* Whichever of the two is in this slot is what the line is
+                            for, so it is the one marked out: the rest of it is options,
+                            tapes and the way back. */}
                         {running ? (
                             <button
                                 type="button"
-                                className="prompt-action"
+                                className="prompt-action primary"
                                 title="Press any key"
                                 onClick={controller.stop}
                             >
@@ -77,7 +80,7 @@ export function Console({ controller, onOptions, onTapes, onExit }: ConsoleProps
                         ) : (
                             <button
                                 type="button"
-                                className="prompt-action"
+                                className="prompt-action primary"
                                 title="Press RETURN"
                                 onClick={controller.start}
                             >

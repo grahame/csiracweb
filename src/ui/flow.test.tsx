@@ -833,6 +833,31 @@ describe("writing Interprogram", () => {
         expect(punched).toContain("42.0001");
     });
 
+    /**
+     * The five tapes that came with the compiler, offered by number and by the
+     * title punched at the head of each, and put in the editor as punched.
+     */
+    it("puts one of the tapes that came with the compiler in the editor, and runs it", async () => {
+        const user = userEvent.setup();
+        await atThePage(user);
+        await justTheResult(user);
+
+        const examples = screen.getByRole("combobox", { name: /examples that came with the compiler tape/ });
+        expect(screen.getByRole("option", { name: "Ex2.dat — INTEREST CALC" })).toBeTruthy();
+
+        await user.selectOptions(examples, "Ex2.dat");
+        await waitFor(() => {
+            expect((source() as HTMLTextAreaElement).value).toContain("TITLE  INTEREST CALC");
+        });
+
+        await user.click(screen.getByRole("button", { name: "Run" }));
+
+        // What the tape gives mounted at the console: 12 shillings and no pence.
+        const punched = (await punch()).textContent ?? "";
+        expect(punched).toContain("INTEREST CALC");
+        expect(punched).toContain("12     0");
+    });
+
     /** The compiler's own complaint is the useful thing, so it is not buried. */
     it("shows what the compiler said about a source it could not parse", async () => {
         const user = userEvent.setup();

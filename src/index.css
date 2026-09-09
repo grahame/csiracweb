@@ -171,6 +171,29 @@ button:disabled {
     cursor: default;
 }
 
+/*
+ * The one button a control area is there for: RETURN at the console, Run on
+ * the Interprogram page. The rest of a line is options, tapes and ways back,
+ * and they are worth telling apart at a glance from the thing that sets the
+ * machine going.
+ *
+ * It is filled in the phosphor green rather than in ink, because ink is
+ * already how a pressed toggle shows itself — see .prompt-action.active, which
+ * sits on the same line as Run — and because green is the machine's own colour
+ * for a thing that is going.
+ */
+button.primary {
+    color: var(--paper);
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 600;
+}
+
+button.primary:hover:not(:disabled) {
+    background: var(--ink);
+    border-color: var(--ink);
+}
+
 input,
 select {
     font: inherit;
@@ -239,6 +262,11 @@ pre {
 
 .tape-data {
     color: var(--accent);
+}
+
+/* A data tape is offered under its own title, which is as long as it is. */
+.tape-data select {
+    max-width: 100%;
 }
 
 .tape-upload {
@@ -715,6 +743,19 @@ pre {
     white-space: pre;
     overflow-wrap: normal;
     overflow-x: auto;
+}
+
+/*
+ * The examples that came with the compiler tape, offered above the editor.
+ * The titles are as long as the tape they name, so the box is allowed to be
+ * as wide as the page and no wider.
+ */
+.interprogram-examples {
+    margin: 0.6rem 0 0.4rem;
+}
+
+.interprogram-examples select {
+    max-width: 100%;
 }
 
 /* The way in to Interprogram, under what that section says it is. */

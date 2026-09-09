@@ -163,7 +163,7 @@ export function OptionsMenu({ controller, onClose, onExit }: OptionsMenuProps) {
             <div className="prompt-line">
                 <button
                     type="button"
-                    className="prompt-action"
+                    className="prompt-action primary"
                     title="Press RETURN"
                     onClick={() => {
                         report("");

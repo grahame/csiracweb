@@ -9,7 +9,7 @@
 import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router";
 
-import { PROMPTS } from "../emulator/interprogram";
+import { INTERPROGRAM_EXAMPLES, PROMPTS, exampleLabel } from "../emulator/interprogram";
 import type { Walkthrough } from "./useMachine";
 
 export interface TapeFile {
@@ -49,7 +49,7 @@ export const CSIRAC_TAPES = [
     {
         name: "InterProgram.cvt",
         title: "Interprogram (June 1960)",
-        data: ["Ex1.dat", "Ex2.dat", "Ex2a.dat", "Ex3.dat", "Ex4.dat"],
+        data: INTERPROGRAM_EXAMPLES.map((example) => example.name),
         notes:
             "Australia's first high level language, and a compiler, so it takes longer than " +
             "the rest and has the reader switched three times. It says what it wants on the " +
@@ -361,6 +361,7 @@ export function TapePicker({ onMount }: TapePickerProps) {
                 </label>
                 <button
                     type="button"
+                    className="primary"
                     disabled={!localProgram}
                     onClick={() => localProgram && onMount(localProgram, localData)}
                 >
@@ -425,7 +426,7 @@ function TapeList({
                         <div className="tape-detail">
                             <strong>{tape.title}</strong>
                             {tape.data.length === 1 ? (
-                                <span className="tape-data"> data tape: {tape.data[0]}</span>
+                                <span className="tape-data"> data tape: {dataTapeLabel(tape.data[0])}</span>
                             ) : null}
                             {tape.data.length > 1 ? (
                                 <label className="tape-data">
@@ -439,7 +440,7 @@ function TapeList({
                                     >
                                         {tape.data.map((name) => (
                                             <option key={name} value={name}>
-                                                {name}
+                                                {dataTapeLabel(name)}
                                             </option>
                                         ))}
                                     </select>
@@ -452,6 +453,18 @@ function TapeList({
             })}
         </ul>
     );
+}
+
+/**
+ * How a data tape is offered: the file name, and what is on it.
+ *
+ * Interprogram's five come with a title punched at the head of the tape, and a
+ * list of `Ex1.dat` to `Ex4.dat` says nothing about which is which. The other
+ * data tapes have no title to give, so they are offered by name alone.
+ */
+function dataTapeLabel(name: string): string {
+    const example = INTERPROGRAM_EXAMPLES.find((candidate) => candidate.name === name);
+    return example ? exampleLabel(example) : name;
 }
 
 async function fetchTape(name: string): Promise<TapeFile> {

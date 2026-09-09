@@ -14,7 +14,14 @@ import { describe, expect, it } from "vitest";
 
 import { Machine } from "./machine";
 import { Tape } from "./tape";
-import { asDataTape, interprogramSteps, runInterprogram, workTheConsole } from "./interprogram";
+import {
+    INTERPROGRAM_EXAMPLES,
+    asDataTape,
+    exampleLabel,
+    interprogramSteps,
+    runInterprogram,
+    workTheConsole,
+} from "./interprogram";
 
 const TAPES = join(import.meta.dirname, "..", "..", "public", "tapes");
 const read = (name: string) => readFileSync(join(TAPES, name), "utf8");
@@ -161,5 +168,46 @@ describe("running Interprogram from typed source", () => {
         expect(result.punch).toContain("EXAMPLE OF OUTPUT, LAYOUT AND FUNCTION FORMATION");
         expect(result.punch).toContain(".250000  -1.38628   .250000   .707105   1.00000   .250000");
         expect(result.punch).toContain("-4567.94   8.42670   4566.89   .336889   .357805   .109375");
+    });
+});
+
+/**
+ * The examples offered on the Interprogram page, which are the tapes that came
+ * with the compiler rather than anything typed.
+ */
+describe("the example tapes", () => {
+    /**
+     * They are listed by title before any of them has been fetched, so the
+     * titles are written down twice: once on the tape, and once in the list.
+     * This is what keeps the second copy honest.
+     */
+    it("are listed under the title punched on the tape", () => {
+        for (const example of INTERPROGRAM_EXAMPLES) {
+            const first = read(example.name).split(/\r\n|\n/)[0];
+            expect(first).toContain(`TITLE  ${example.title}`);
+        }
+    });
+
+    it("are named by tape and by title, so neither has to be guessed at", () => {
+        expect(exampleLabel(INTERPROGRAM_EXAMPLES[1])).toBe("Ex2.dat — INTEREST CALC");
+    });
+
+    /**
+     * Loading one into the editor and pressing Run is the same session as
+     * mounting the tape at the console, and has to give the same answers. It
+     * only does because `asDataTape` leaves a tape alone: putting one through
+     * the treatment a typed source gets turns its `b`, `e` and `l` codes into
+     * letters, which quietly changes the data Ex2 and Ex3 read and stops Ex4
+     * compiling at all.
+     */
+    it("compile to the same thing whether mounted or put in the editor", () => {
+        for (const { name } of INTERPROGRAM_EXAMPLES) {
+            const tape = read(name);
+            const mounted = runInterprogram(tape, { day: 4, compilerTape });
+            const edited = runInterprogram(asDataTape(tape), { day: 4, compilerTape });
+
+            expect(mounted.outcome).toBe("finished");
+            expect(edited.punch).toBe(mounted.punch);
+        }
     });
 });

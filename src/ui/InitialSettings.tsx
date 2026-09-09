@@ -47,8 +47,11 @@ export function InitialSettings({
 
     return (
         <div className="settings-screen">
-          <h2>Initial CSIRAC settings</h2>
-          <p>Use this screen to set the machine up, prior to reading in the program tape. You can likely just hit the "Read program into memory" button to proceed.</p>
+            <h2>Initial CSIRAC settings</h2>
+            <p>
+                Use this screen to set the machine up, prior to reading in the program tape. You can likely just hit the
+                "Read program into memory" button to proceed.
+            </p>
             <pre className="settings-text">
                 {`
 Unit add to S per command: ON
@@ -84,7 +87,7 @@ Data tape:    ${dataName || "(none)"}`}
                 <button type="button" className="prompt-action secondary" onClick={onBack}>
                     Choose another tape
                 </button>
-                <button type="button" className="prompt-action" title="Press RETURN" onClick={onAccept}>
+                <button type="button" className="prompt-action primary" title="Press RETURN" onClick={onAccept}>
                     Read program into memory
                 </button>
             </div>

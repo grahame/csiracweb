@@ -22,12 +22,13 @@
  * passed in.
  */
 
-import type { ReactNode } from "react";
+import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 import { formatFraction, formatInteger } from "../emulator/format";
 import { toScale32, toScale32Quad } from "../emulator/word";
 import { Binary } from "./Binary";
-import { Crt, type Tube } from "./Crt";
+import { Crt } from "./Crt";
+import type { Tube } from "./crt-draw";
 import type { MachineController } from "./MachineContext";
 import { Readers } from "./Readers";
 import type { MachineView } from "./useMachine";
@@ -193,13 +194,48 @@ export function Registers({ view, digits }: { view: MachineView; digits: boolean
  * has no such width; it produced tape.
  */
 export function PrinterOutput({ head, text, columns }: { head: string; text: string; columns?: number }) {
+    const paper = useRef<HTMLPreElement>(null);
+    /**
+     * Whether the paper is being watched come off the machine.
+     *
+     * The box holds about a dozen lines and a program prints more than that, so
+     * something has to give when a new line is printed below the bottom of it.
+     * The paper follows the printing, as it did coming out of the teleprinter —
+     * unless it has been wound back to read something further up, which is a
+     * deliberate act and is not undone by the next line being printed.
+     */
+    const following = useRef(true);
+
+    // Before the browser paints, so a line is never seen off the bottom of the
+    // box on its way to being scrolled to.
+    useLayoutEffect(() => {
+        const shown = paper.current;
+        if (!shown || !following.current) return;
+        shown.scrollTop = shown.scrollHeight;
+    }, [text]);
+
     return (
         <div className="printer-output">
             <div className="printer-head">{head}</div>
-            <pre style={columns ? { width: `${columns}ch` } : undefined}>{text}</pre>
+            <pre
+                ref={paper}
+                style={columns ? { width: `${columns}ch` } : undefined}
+                onScroll={() => {
+                    const shown = paper.current;
+                    if (!shown) return;
+                    // A line of slack, because a fractional scroll height never
+                    // quite reaches the bottom.
+                    following.current = shown.scrollHeight - shown.scrollTop - shown.clientHeight < LINE_SLACK;
+                }}
+            >
+                {text}
+            </pre>
         </div>
     );
 }
+
+/** How far off the bottom still counts as being at it, in pixels. */
+const LINE_SLACK = 24;
 
 /**
  * Anything the compiler said that was not an instruction to the operator.

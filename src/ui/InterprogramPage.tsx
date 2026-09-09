@@ -21,9 +21,15 @@
  * the tenth run of an afternoon.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { asDataTape, runInterprogram, type InterprogramResult } from "../emulator/interprogram";
+import {
+    INTERPROGRAM_EXAMPLES,
+    asDataTape,
+    exampleLabel,
+    runInterprogram,
+    type InterprogramResult,
+} from "../emulator/interprogram";
 import { InterprogramWatch, useInterprogramRun, type WatchedRun } from "./InterprogramWatch";
 import { CompilerMessages, PrinterOutput, PromptStatus } from "./MachineDisplay";
 
@@ -44,6 +50,8 @@ const STARTER = `     (1)  TITLE  A FIRST PROGRAM
 
 export function InterprogramPage() {
     const [source, setSource] = useState(STARTER);
+    /** Which of the tapes is in the editor, or "" for the program above. */
+    const [example, setExample] = useState("");
     const [compilerTape, setCompilerTape] = useState("");
     const [loadError, setLoadError] = useState("");
     /** Watch the machine work, or skip to what the punch produced. */
@@ -55,6 +63,11 @@ export function InterprogramPage() {
     // dated the day it is made, as a listing off the machine would have been.
     const day = useMemo(() => new Date().getDate(), []);
     const watched = useInterprogramRun({ source, compilerTape, day });
+
+    /** The machine, or the paper: whatever pressing Run put on the page. */
+    const outputRef = useRef<HTMLDivElement>(null);
+    /** Set by Run, and cleared once the page has been taken down to it. */
+    const [following, setFollowing] = useState(false);
 
     // The compiler is a tape like any other, fetched once and kept.
     useEffect(() => {
@@ -76,6 +89,10 @@ export function InterprogramPage() {
 
     const run = useCallback(() => {
         if (!compilerTape) return;
+        // The machine is below the fold on most screens, and pressing Run with
+        // nothing apparently happening is the wrong answer to give: the page
+        // follows the run down to it once there is something to see.
+        setFollowing(true);
         if (watching) {
             watched.start();
             return;
@@ -89,6 +106,30 @@ export function InterprogramPage() {
             setRunning(false);
         }, 0);
     }, [source, compilerTape, day, watching, watched]);
+
+    /**
+     * Put one of the compiler's own example tapes in the editor.
+     *
+     * What arrives is the tape as it was punched, blank tape, erase codes and
+     * all, because that is what runs: it is threaded exactly as it stands and
+     * gives what it gave at the console. See `asDataTape`, which knows a tape
+     * from something typed and leaves this one alone.
+     */
+    const loadExample = useCallback(async (name: string) => {
+        setExample(name);
+        if (name === "") {
+            setSource(STARTER);
+            return;
+        }
+        try {
+            const response = await fetch(`${import.meta.env.BASE_URL}tapes/${name}`);
+            if (!response.ok) throw new Error(`${name} could not be read (${response.status})`);
+            setSource(await response.text());
+            setLoadError("");
+        } catch (err) {
+            setLoadError(err instanceof Error ? err.message : String(err));
+        }
+    }, []);
 
     /**
      * The one thing on the page you press, and what it does. The three states it
@@ -108,6 +149,22 @@ export function InterprogramPage() {
             ? watched.controller.view.instructionCount
             : null
         : (result?.commands ?? null);
+
+    /** True once pressing Run has put something on the page to look at. */
+    const somethingToSee = watching ? watched.started : result !== null;
+
+    // Take the page down to it, once there is something to be taken down to.
+    // Watching, that is the machine, and it is there as soon as Run is pressed;
+    // skipping to the result, it is the paper, and it arrives when the session
+    // is over, which is a second or so later.
+    useEffect(() => {
+        if (!following || !somethingToSee) return;
+        setFollowing(false);
+        const shown = outputRef.current;
+        // jsdom has no layout, and so no scrollIntoView.
+        if (!shown || typeof shown.scrollIntoView !== "function") return;
+        shown.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, [following, somethingToSee]);
 
     const showWatching = useCallback(
         (wanted: boolean) => {
@@ -140,6 +197,20 @@ export function InterprogramPage() {
                 </a>
                 This is a historic programming language that very much exists in the context of the machine it was
                 written for, and you're program runs on that machine with all its quirks and limitations.
+            </p>
+
+            <p className="interprogram-examples">
+                <label>
+                    Or start from one of the examples that came with the compiler tape:
+                    <select value={example} onChange={(event) => void loadExample(event.target.value)}>
+                        <option value="">A FIRST PROGRAM</option>
+                        {INTERPROGRAM_EXAMPLES.map((tape) => (
+                            <option key={tape.name} value={tape.name}>
+                                {exampleLabel(tape)}
+                            </option>
+                        ))}
+                    </select>
+                </label>
             </p>
 
             <textarea
@@ -193,7 +264,7 @@ export function InterprogramPage() {
                     )}
                     <button
                         type="button"
-                        className="prompt-action run"
+                        className="prompt-action primary"
                         onClick={press.act}
                         disabled={(running && !watching) || !compilerTape}
                     >
@@ -204,16 +275,18 @@ export function InterprogramPage() {
 
             {loadError ? <p className="error">{loadError}</p> : null}
 
-            {watching ? (
-                watched.started ? (
-                    <InterprogramWatch run={watched} />
-                ) : null
-            ) : result ? (
-                <>
-                    <CompilerMessages messages={result.messages} />
-                    <PrinterOutput head="Punch (OP)" text={result.punch || "(nothing punched)"} />
-                </>
-            ) : null}
+            <div ref={outputRef}>
+                {watching ? (
+                    watched.started ? (
+                        <InterprogramWatch run={watched} />
+                    ) : null
+                ) : result ? (
+                    <>
+                        <CompilerMessages messages={result.messages} />
+                        <PrinterOutput head="Punch (OP)" text={result.punch || "(nothing punched)"} />
+                    </>
+                ) : null}
+            </div>
         </div>
     );
 }
