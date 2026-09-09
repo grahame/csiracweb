@@ -22,7 +22,6 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
 
 import { asDataTape, runInterprogram, type InterprogramResult } from "../emulator/interprogram";
 import { InterprogramWatch, useInterprogramRun, type WatchedRun } from "./InterprogramWatch";

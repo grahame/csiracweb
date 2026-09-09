@@ -8,7 +8,7 @@
 
 import { useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import CsiracLogo from "../../public/csirac-traced.svg";
+import CsiracLogo from "../csirac-traced.svg";
 
 import { PROMPTS } from "../emulator/interprogram";
 import type { Walkthrough } from "./useMachine";
