@@ -26,30 +26,36 @@ export function App() {
     return (
         <div className="app">
             <div className="screen">
-                <Link to="/">
-                    <img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" />
-                </Link>
-                <Routes>
-                    <Route path="/" element={<PickerScreen />} />
+                {/* The wordmark is the heading every screen sits under, and the way
+                    back to the tapes. What the routes render is the page itself. */}
+                <h1 className="wordmark">
+                    <Link to="/">
+                        <img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" />
+                    </Link>
+                </h1>
+                <main>
+                    <Routes>
+                        <Route path="/" element={<PickerScreen />} />
 
-                    {/* Writing Interprogram wants none of the machine's state: no tape in
+                        {/* Writing Interprogram wants none of the machine's state: no tape in
                     the reader, no switches, nothing to carry between screens. It is a
                     page of its own for that reason. */}
-                    <Route path="/interprogram" element={<InterprogramPage />} />
+                        <Route path="/interprogram" element={<InterprogramPage />} />
 
-                    <Route path="/settings" element={<SettingsScreen />}>
-                        <Route path="options" element={<OptionsOverlay />} />
-                        <Route path="tape" element={<TapeOverlay />} />
-                    </Route>
+                        <Route path="/settings" element={<SettingsScreen />}>
+                            <Route path="options" element={<OptionsOverlay />} />
+                            <Route path="tape" element={<TapeOverlay />} />
+                        </Route>
 
-                    <Route path="/console" element={<ConsoleScreen />}>
-                        <Route path="options" element={<OptionsOverlay />} />
-                        <Route path="tape" element={<TapeOverlay />} />
-                    </Route>
+                        <Route path="/console" element={<ConsoleScreen />}>
+                            <Route path="options" element={<OptionsOverlay />} />
+                            <Route path="tape" element={<TapeOverlay />} />
+                        </Route>
 
-                    {/* Anything else, including a stale link, goes back to the reader. */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
+                        {/* Anything else, including a stale link, goes back to the reader. */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </main>
             </div>
 
             <Credit />
@@ -272,12 +278,23 @@ function Credit() {
                 world. It ran from 1949 to 1964 and survives intact at Museums Victoria.
             </p>
             <p>
-                This emulator is a port of <strong>CSIRACEM</strong>, written in Turbo Pascal by{" "}
-                <strong>John W. Spencer</strong>, who used CSIRAC from 1959 to 1964. He kindly provided the code for his
-                emulator and gave permission for it to be ported to the web. Claude Code was used substantially in
-                developing this page, primarily in taking the Turbo Pascal emulator and porting it to Typescript. Some
-                human code review of the generated code has been carried out, but this has not been by any means
-                exhaustive.
+                Various{" "}
+                <a href="https://cis.unimelb.edu.au/about/history/csirac/emulator" target="_blank">
+                    emulators for CSIRAC have been developed
+                </a>
+                . This one is a port of <strong>CSIRACEM</strong>, written in Turbo Pascal 6 by{" "}
+                <strong>John W. Spencer</strong>, who used CSIRAC from 1959 to 1964. In 2011 &ndash; some fifteen years
+                ago! &ndash; he was kind enough to share the source code with{" "}
+                <a href="https://grahame.dev/">Grahame Bowland</a>, the author of this page, and to give permission for
+                it to be ported to the web. CSIRACEM required a DOS machine or emulator to run, which has become
+                increasingly difficult; this page needs nothing more than a web browser. It also draws upon some CSIRAC
+                tape images which were included with Bill Purvis&rsquo; 2021 Java port of the emulator, but does not
+                otherwise rely on that work.
+            </p>
+            <p>
+                Claude Code was used substantially in developing this page, primarily in taking the Turbo Pascal
+                emulator and porting it to Typescript. Some human code review of the generated code has been carried
+                out, but this has not been by any means exhaustive.
             </p>
             <p>
                 <a href="https://github.com/grahame/csiracweb">source code on github</a>

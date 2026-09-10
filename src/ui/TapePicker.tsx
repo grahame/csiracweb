@@ -287,22 +287,6 @@ export function TapePicker({ onMount }: TapePickerProps) {
                 <Link to="/interprogram">program in Australia's first domestically produced programming language</Link>,
                 G. W. Hill's Interprogram.
             </p>
-            <p>
-                Various{" "}
-                <a href="https://cis.unimelb.edu.au/about/history/csirac/emulator" target="_blank">
-                    emulators for CSIRAC have been developed
-                </a>
-                . John W. Spencer developed an emulator in Turbo Pascal 6, and in 2011 – some fifteen years ago! – was
-                kind enough to share the source code with <a href="https://grahame.dev/">Grahame Bowland</a>, the author
-                of this page. John's 'CSIRACEM' program required a DOS machine or emulator to run, which has become
-                increasingly difficult. This page takes John Spencer's work and makes it available on the web in a much
-                more accessible form, without needing anything more than a web browser. It also draws upon some CSIRAC
-                tape images which were included with Bill Purvis' 2021 Java port of the emulator, but does not otherwise
-                rely on that work.
-            </p>
-
-            <p></p>
-
             <h2>Code in Australia's first programming language</h2>
             <p className="viewer-note">
                 Write a program in Australia&rsquo;s first high level computer programming language, and then run it on
@@ -338,7 +322,23 @@ export function TapePicker({ onMount }: TapePickerProps) {
                 onMount={mountBundled}
             />
 
-            <h2>Or write your own program</h2>
+            <h2>Emulator test programs</h2>
+            <p className="viewer-note">
+                Punched for this emulator, and never run on CSIRAC. They are here to show the loudspeaker working, and
+                to be read as short examples of how a tape is put together. <code>tools/make-tunes.mjs</code> generates
+                them.
+            </p>
+            <TapeList
+                tapes={EMULATOR_TAPES}
+                busy={busy}
+                chosenData={chosenData}
+                onChoose={setChosenData}
+                onMount={mountBundled}
+            />
+
+            <h2>Or write a tape of your own</h2>
+
+            <h3>From a blank tape</h3>
             <p className="viewer-note">
                 Starts you off with a two instruction program: print a character, then halt. Read it in, view and edit
                 the tape, and then run it on the machine.
@@ -359,7 +359,7 @@ export function TapePicker({ onMount }: TapePickerProps) {
                 </button>
             </div>
 
-            <h2>Or use a tape of your own</h2>
+            <h3>From a file you already have</h3>
             <div className="tape-upload">
                 <label>
                     Program tape
@@ -386,20 +386,6 @@ export function TapePicker({ onMount }: TapePickerProps) {
                     Mount {localProgram ? localProgram.name : "..."}
                 </button>
             </div>
-
-            <h2>Emulator test programs</h2>
-            <p className="viewer-note">
-                Punched for this emulator, and never run on CSIRAC. They are here to show the loudspeaker working, and
-                to be read as short examples of how a tape is put together. <code>tools/make-tunes.mjs</code> generates
-                them.
-            </p>
-            <TapeList
-                tapes={EMULATOR_TAPES}
-                busy={busy}
-                chosenData={chosenData}
-                onChoose={setChosenData}
-                onMount={mountBundled}
-            />
 
             {error ? <p className="error">{error}</p> : null}
         </div>
