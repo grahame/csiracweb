@@ -31,6 +31,7 @@ import { Crt } from "./Crt";
 import type { Tube } from "./crt-draw";
 import type { MachineController } from "./MachineContext";
 import { Readers } from "./Readers";
+import { SwitchPanel } from "./Switches";
 import type { MachineView } from "./useMachine";
 
 interface MachineDisplayProps {
@@ -44,9 +45,15 @@ interface MachineDisplayProps {
      * printed. The Interprogram page has its own and passes none.
      */
     controls?: ReactNode;
+    /**
+     * Working the hand-set switches, for a console somebody is at. The
+     * Interprogram page passes none: its switches are worked for you, and the
+     * row is there to be watched rather than touched.
+     */
+    onSetRegister?: (name: "na" | "nb", word: number) => void;
 }
 
-export function MachineDisplay({ controller, aside, controls }: MachineDisplayProps) {
+export function MachineDisplay({ controller, aside, controls, onSetRegister }: MachineDisplayProps) {
     const { view, running, binaryDigits, displayD, memoryStart } = controller;
 
     // The D display can be switched to show the last sixteen commands obeyed.
@@ -90,6 +97,12 @@ export function MachineDisplay({ controller, aside, controls }: MachineDisplayPr
                 />
                 {aside}
             </div>
+
+            {/* NA and NB are set by hand rather than computed, so they are a
+                thing to work rather than a thing to read: the row of switches
+                goes with the reader and the keys, not with the printed state
+                at the foot of the page. */}
+            <SwitchPanel na={view.na} nb={view.nb} onSet={onSetRegister} />
 
             {/* The teleprinter was eighty columns wide, so the paper is. */}
             <PrinterOutput head="Teleprinter (OT)" text={view.teleprinter || " "} columns={80} />

@@ -527,6 +527,115 @@ pre {
     margin-bottom: 0.4rem;
 }
 
+/* ---- Hand-set switches ------------------------------------------------- */
+
+/*
+ * NA and NB, as they were on the console: two rows of twenty toggle switches,
+ * numbered p1 at the right hand end to p20 at the left, grouped in fives the
+ * way a word is written down. The box is the machine's, not the page's, so it
+ * is ruled like the readers and the paper rather than set into the prose.
+ */
+.switch-panel {
+    border: 1px solid var(--rule);
+    padding: 0.4rem 0.6rem 0.5rem;
+    margin-bottom: 0.6rem;
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.switch-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0.3rem;
+}
+
+/*
+ * The name at one end and what the row comes to at the other, neither of them
+ * squeezed: the box scrolls sideways when there is no room, rather than
+ * breaking a scale 32 word across two lines.
+ */
+.switch-name,
+.switch-value {
+    font-family: var(--mono);
+    color: var(--ink-strong);
+    flex: none;
+    white-space: nowrap;
+}
+
+.switch-value {
+    color: var(--accent);
+}
+
+.switch-bank {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.switch-group {
+    display: flex;
+    gap: 0.2rem;
+}
+
+/*
+ * One switch. The lever is the thing that moves and the number under it is the
+ * digit it sets; both are inside the button, so the whole switch is what is
+ * pressed rather than the lever alone.
+ */
+.switch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+    border: none;
+    padding: 0;
+    background: none;
+}
+
+/* The console's own colours: these are hardware, and do not invert on hover. */
+.switch:hover:not(:disabled) {
+    color: inherit;
+    background: none;
+}
+
+.switch-lever {
+    position: relative;
+    width: 0.8rem;
+    height: 1.5rem;
+    border: 1px solid var(--rule);
+    background: var(--panel);
+}
+
+/* Down is off, and the lever rests at the bottom of its travel. */
+.switch-lever::after {
+    content: "";
+    position: absolute;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    height: 45%;
+    background: var(--ink-dim);
+}
+
+/* Up is on, and it lights, as the lamps and the phosphor do. */
+.switch.up .switch-lever::after {
+    top: 1px;
+    bottom: auto;
+    background: var(--accent);
+}
+
+button.switch:hover .switch-lever {
+    border-color: var(--ink);
+}
+
+.switch-number {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    line-height: 1;
+    color: var(--ink-dim);
+}
+
 /* ---- Prompt line ------------------------------------------------------- */
 
 .prompt-line {
@@ -1251,6 +1360,22 @@ a:hover {
     input:not([type="checkbox"]) {
         min-height: 2.75rem;
         padding: 0.4rem 0.7rem;
+    }
+
+    /*
+     * ... except the toggle switches, which are twenty in a row and cannot be
+     * given a button's worth of padding each. What grows is the lever, which
+     * is the part being reached for; the row is wider than a phone either way
+     * and scrolls in its box, as a row of switches a foot long would.
+     */
+    .switch {
+        min-height: 0;
+        padding: 0 0.15rem;
+    }
+
+    .switch-lever {
+        width: 1.1rem;
+        height: 2.1rem;
     }
 
     /* The logo is a heading here rather than a nameplate across the top. */

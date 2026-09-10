@@ -9,7 +9,9 @@ export default defineConfig({
         // The console tests drive the machine at CSIRAC's own seventeen commands
         // per animation frame, because that is the only speed there is. Working
         // Interprogram through its walkthrough is thousands of frames, and each
-        // one is a React render, so the default five seconds is not enough.
-        testTimeout: 60_000,
+        // one is a React render, and the machine is left stopped for a couple
+        // of seconds at each of the seven steps besides, so the default five
+        // seconds is nowhere near enough.
+        testTimeout: 90_000,
     },
 });

@@ -752,6 +752,65 @@ describe("choosing the tape, with the reader following it", () => {
 });
 
 /**
+ * NA and NB, which are set by hand.
+ *
+ * Neither is computed: each was a row of twenty toggle switches on the console
+ * and a program read the row as a source, so the way to set one is to work the
+ * switches. p1 is at the right hand end and p20 at the left, as the digits are
+ * numbered everywhere else.
+ */
+describe("the hand-set switches", () => {
+    /** What the row says it comes to, in scale 32, at its right hand end. */
+    const shown = (row: number) =>
+        document.querySelectorAll(".switch-row")[row].querySelector(".switch-value")?.textContent;
+    const toggle = (name: string) => screen.getByRole("button", { name });
+
+    async function atTheConsole(user: ReturnType<typeof userEvent.setup>) {
+        renderApp();
+        await user.click(screen.getByRole("button", { name: /^Multiplication\.cvt/ }));
+        await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
+        await settle();
+    }
+
+    it("stands where the machine stands: NA at p6, which is 32", async () => {
+        const user = userEvent.setup();
+        await atTheConsole(user);
+
+        expect(shown(0)).toBe("0 0 1 0");
+        expect(toggle("NA switch 6").getAttribute("aria-pressed")).toBe("true");
+        expect(toggle("NA switch 1").getAttribute("aria-pressed")).toBe("false");
+    });
+
+    it("puts a digit into the register when its switch goes up", async () => {
+        const user = userEvent.setup();
+        await atTheConsole(user);
+
+        await user.click(toggle("NA switch 1"));
+        expect(shown(0)).toBe("0 0 1 1");
+
+        // p20 is the far end of the word, and worth 16 in the first scale 32
+        // digit rather than anything strange: it is a digit like the others.
+        await user.click(toggle("NA switch 20"));
+        expect(shown(0)).toBe("16 0 1 1");
+
+        // And down again, which is where it came from.
+        await user.click(toggle("NA switch 20"));
+        expect(shown(0)).toBe("0 0 1 1");
+    });
+
+    it("works the two rows apart from one another", async () => {
+        const user = userEvent.setup();
+        await atTheConsole(user);
+
+        // p11 is the unit Interprogram asks for the day of the month in.
+        await user.click(toggle("NB switch 11"));
+
+        expect(shown(0)).toBe("0 0 1 0");
+        expect(shown(1)).toBe("0 1 0 0");
+    });
+});
+
+/**
  * Where the emulator came from, which is a page rather than a footer.
  *
  * The credit used to be four paragraphs under every screen. It is one line and
@@ -812,12 +871,15 @@ describe("writing Interprogram", () => {
      * Wait for the punch to have something on it.
      *
      * The watched run is a whole session at CSIRAC's thousand commands a
-     * second — some fifty thousand of them, seventeen to a frame, with the
-     * machine stopped for a moment at each of the seven steps — and it lands
-     * close enough to twenty seconds that a loaded machine misses it. The
-     * allowance is what the session actually costs, doubled.
+     * second — some fifty thousand of them, seventeen to a frame — and the
+     * machine is stopped at each of the seven steps for a couple of seconds so
+     * that the step coming can be read before it happens, which is a quarter
+     * of a minute of the wait on its own. It lands around thirty seconds here.
+     * The allowance is that with room for a loaded machine; see
+     * OPERATOR_PAUSE_MS, and testTimeout in vitest.config.ts, which has to be
+     * larger again.
      */
-    const punch = async () => await screen.findByText(/CSIRAC INTERPROGRAM COMPILED/, undefined, { timeout: 40_000 });
+    const punch = async () => await screen.findByText(/CSIRAC INTERPROGRAM COMPILED/, undefined, { timeout: 60_000 });
 
     it("is reached from the tape picker by the button as well as the sentence", async () => {
         const user = userEvent.setup();
@@ -889,6 +951,20 @@ describe("writing Interprogram", () => {
         const punched = (await punch()).textContent ?? "";
         expect(punched).toContain("INTEREST CALC");
         expect(punched).toContain("12     0");
+    });
+
+    /**
+     * The switches are the machine's, and they are shown being set — but this
+     * page is the console worked for you, so they are not there to be worked.
+     */
+    it("shows the hand-set switches, but does not offer them to be worked", async () => {
+        const user = userEvent.setup();
+        await atThePage(user);
+
+        await user.click(screen.getByRole("button", { name: "Run" }));
+
+        expect(document.querySelectorAll(".switch-panel .switch")).toHaveLength(40);
+        expect(document.querySelectorAll(".switch-panel button")).toHaveLength(0);
     });
 
     /** The compiler's own complaint is the useful thing, so it is not buried. */

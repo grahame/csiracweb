@@ -287,7 +287,9 @@ function Credit() {
     return (
         <footer className="credit">
             <p>
-                A web port of <strong>CSIRACEM</strong>, John W. Spencer&rsquo;s CSIRAC emulator.
+                A web port of <strong>CSIRACEM</strong>, John W. Spencer&rsquo;s CSIRAC emulator, made by{" "}
+                <a href="https://grahame.theol.au/">Grahame Bowland</a> (AI use disclosure: Claude Opus was used to
+                assist.)
             </p>
             <p className="credit-links">
                 <Link to="/about">About this emulator</Link>

@@ -183,7 +183,7 @@ export function interprogramSteps(day = 1): readonly InterprogramStep[] {
             nb: dayOfMonth(day),
         },
         {
-            does: "Interprogram source is read from 5-hole reader.",
+            does: "Program source code is read from the 5-hole reader.",
             readData: true,
         },
         { does: "The machine is resumed, and stops again almost at once." },

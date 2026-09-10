@@ -49,6 +49,7 @@ export function Console({ controller, onOptions, onTapes, onExit }: ConsoleProps
             <MachineDisplay
                 controller={controller}
                 aside={<OperationsMenu controller={controller} onExit={onExit} />}
+                onSetRegister={(name, word) => controller.setSwitch(name, word)}
                 controls={
                     <div className="prompt-line">
                         {/*
