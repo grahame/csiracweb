@@ -218,6 +218,16 @@ export const NEW_TAPE = [
     "",
 ].join("\r\n");
 
+/**
+ * What the file picker offers up.
+ *
+ * A tape image is a text file, and the two extensions the DOS emulator used
+ * are what one is called: `.cvt` for a program and `.dat` for data. Anything
+ * else can still be chosen — the list is a suggestion, not a gate — but a
+ * folder of tapes is easier to find a tape in when the rest is greyed out.
+ */
+const TAPE_FILES = ".cvt,.dat,.txt,text/plain";
+
 interface TapePickerProps {
     onMount: (program: TapeFile, data: TapeFile | null, howToRun?: string, walkthrough?: Walkthrough | null) => void;
 }
@@ -353,11 +363,19 @@ export function TapePicker({ onMount }: TapePickerProps) {
             <div className="tape-upload">
                 <label>
                     Program tape
-                    <input type="file" onChange={(event) => void mountLocal(event.target.files, "program")} />
+                    <input
+                        type="file"
+                        accept={TAPE_FILES}
+                        onChange={(event) => void mountLocal(event.target.files, "program")}
+                    />
                 </label>
                 <label>
                     Data tape (optional)
-                    <input type="file" onChange={(event) => void mountLocal(event.target.files, "data")} />
+                    <input
+                        type="file"
+                        accept={TAPE_FILES}
+                        onChange={(event) => void mountLocal(event.target.files, "data")}
+                    />
                 </label>
                 <button
                     type="button"

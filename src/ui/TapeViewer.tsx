@@ -81,7 +81,7 @@ export function TapeViewer({
     const setText = tab === "program" ? setProgram : setData;
 
     return (
-        <div className="tape-viewer">
+        <div className="tape-viewer" role="dialog" aria-modal="true" aria-label="Tapes" tabIndex={-1}>
             <div className="viewer-head">
                 <h2>Tapes</h2>
                 <div className="viewer-tabs">

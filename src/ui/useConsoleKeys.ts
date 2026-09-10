@@ -11,6 +11,9 @@ import { useLocation, useNavigate } from "react-router";
 
 import { useController } from "./MachineContext";
 
+/** Keys that are not the operator pressing something. See below. */
+const PASSED_OVER = new Set(["TAB", "SHIFT", "CONTROL", "ALT", "META", "CAPSLOCK"]);
+
 export function useConsoleKeys(screen: "settings" | "console") {
     const controller = useController();
     const navigate = useNavigate();
@@ -29,6 +32,12 @@ export function useConsoleKeys(screen: "settings" | "console") {
             if (event.metaKey || event.ctrlKey || event.altKey) return;
 
             const key = event.key.toUpperCase();
+
+            // "Any key" means a key that was meant: a modifier on its own is
+            // half of a keystroke, and TAB is how the keyboard gets about the
+            // page. Stopping the machine on either of them means a keyboard
+            // cannot be used to reach the controls of a running machine.
+            if (PASSED_OVER.has(key)) return;
 
             // An open overlay takes the keys: RETURN or ESCAPE closes it, and going
             // back is what closing means.

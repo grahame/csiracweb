@@ -163,7 +163,11 @@ export function InterprogramPage() {
         const shown = outputRef.current;
         // jsdom has no layout, and so no scrollIntoView.
         if (!shown || typeof shown.scrollIntoView !== "function") return;
-        shown.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Somebody who has asked for less movement on their screen is taken
+        // there rather than carried, as the blinking cursor is stilled for
+        // them too; see prefers-reduced-motion in index.css.
+        const carried = !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        shown.scrollIntoView({ behavior: carried ? "smooth" : "auto", block: "start" });
     }, [following, somethingToSee]);
 
     const showWatching = useCallback(
@@ -194,9 +198,9 @@ export function InterprogramPage() {
                     target="_blank"
                 >
                     Interprogram manual.
-                </a>
+                </a>{" "}
                 This is a historic programming language that very much exists in the context of the machine it was
-                written for, and you're program runs on that machine with all its quirks and limitations.
+                written for, and your program runs on that machine with all its quirks and limitations.
             </p>
 
             <p className="interprogram-examples">

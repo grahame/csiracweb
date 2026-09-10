@@ -6,7 +6,8 @@
  * and forward buttons move between them and a screen can be linked to.
  */
 
-import { Navigate, Outlet, Route, Routes, useNavigate } from "react-router";
+import { useEffect, useRef, type ReactNode } from "react";
+import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
 
 import { Console } from "./Console";
 import { InitialSettings } from "./InitialSettings";
@@ -20,12 +21,14 @@ import type { Walkthrough } from "./useMachine";
 import CsiracLogo from "../csirac-traced.svg";
 
 export function App() {
+    usePageTitle();
+
     return (
         <div className="app">
             <div className="screen">
-                <a href="/csirac/">
+                <Link to="/">
                     <img src={CsiracLogo} alt="CSIRAC" className="csirac-logo" />
-                </a>
+                </Link>
                 <Routes>
                     <Route path="/" element={<PickerScreen />} />
 
@@ -135,7 +138,7 @@ function OptionsOverlay() {
     const close = () => void navigate(-1);
 
     return (
-        <div className="overlay">
+        <Overlay onClose={close}>
             <OptionsMenu
                 controller={controller}
                 onClose={close}
@@ -144,16 +147,81 @@ function OptionsOverlay() {
                     void navigate("/");
                 }}
             />
+        </Overlay>
+    );
+}
+
+/**
+ * A panel laid over the console, with the console still there behind it.
+ *
+ * What the panel does is its own business; this is the everything else that
+ * comes of covering a page with one. The dim console around it is a way out,
+ * as it is everywhere else on the web — RETURN and ESCAPE are the other two,
+ * and they are the console's own keys, in useConsoleKeys. The page behind is
+ * held still while it is up, so a scroll meant for the panel does not carry
+ * the machine along underneath it. And the keyboard goes in with it and comes
+ * back out where it was: TAB works round the panel rather than wandering off
+ * into a console that cannot be seen.
+ */
+function Overlay({ onClose, children }: { onClose: () => void; children: ReactNode }) {
+    const overlay = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const cameFrom = document.activeElement as HTMLElement | null;
+        const held = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        // The panel itself takes the focus, rather than the first thing in it,
+        // so that a screen reader says what has opened before reading it out.
+        const panel = overlay.current?.firstElementChild as HTMLElement | null;
+        panel?.focus();
+
+        return () => {
+            document.body.style.overflow = held;
+            cameFrom?.focus?.();
+        };
+    }, []);
+
+    return (
+        <div
+            className="overlay"
+            ref={overlay}
+            // Only the backdrop itself: a press that started on the panel and
+            // ended outside it is a drag, not a way out.
+            onMouseDown={(event) => {
+                if (event.target === event.currentTarget) onClose();
+            }}
+            onKeyDown={(event) => {
+                if (event.key !== "Tab") return;
+                const stops = overlay.current?.querySelectorAll<HTMLElement>(FOCUSABLE);
+                if (!stops || stops.length === 0) return;
+
+                const first = stops[0];
+                const last = stops[stops.length - 1];
+                const at = document.activeElement;
+                if (event.shiftKey && (at === first || at === overlay.current?.firstElementChild)) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && at === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }}
+        >
+            {children}
         </div>
     );
 }
+
+/** Everything in a panel that the keyboard can reach. */
+const FOCUSABLE =
+    'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
 
 function TapeOverlay() {
     const controller = useController();
     const navigate = useNavigate();
 
     return (
-        <div className="overlay">
+        <Overlay onClose={() => void navigate(-1)}>
             <TapeViewer
                 programName={controller.programName}
                 programText={controller.programText}
@@ -170,9 +238,31 @@ function TapeOverlay() {
                     void navigate("/settings");
                 }}
             />
-        </div>
+        </Overlay>
     );
 }
+
+/**
+ * What the tab says, which is not the same on every screen.
+ *
+ * A page that is one thing all the way through can have one title; this is
+ * five screens, and a browser history of five identical entries says nothing
+ * about which is which.
+ */
+function usePageTitle() {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        document.title = TITLES[pathname.split("/")[1] ?? ""] ?? "CSIRAC Emulator";
+    }, [pathname]);
+}
+
+const TITLES: Record<string, string> = {
+    "": "CSIRAC Emulator",
+    interprogram: "Interprogram — CSIRAC Emulator",
+    settings: "Initial settings — CSIRAC Emulator",
+    console: "Console — CSIRAC Emulator",
+};
 
 function Credit() {
     return (

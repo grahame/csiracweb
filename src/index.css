@@ -182,6 +182,24 @@ button:disabled {
 }
 
 /*
+ * Where the keyboard is.
+ *
+ * The browser draws its own ring in its own colour, which against a button
+ * filled with ink or with phosphor is no ring at all, and this page is worked
+ * from the keyboard as much as from the mouse. So the ring is the page's, and
+ * it is drawn outside the button rather than on it.
+ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* A green ring around a green button is not one. */
+button.primary:focus-visible {
+    outline-color: var(--ink-strong);
+}
+
+/*
  * The one button a control area is there for: RETURN at the console, Run on
  * the Interprogram page. The rest of a line is options, tapes and ways back,
  * and they are worth telling apart at a glance from the thing that sets the
@@ -374,8 +392,14 @@ pre {
     white-space: pre;
 }
 
+/*
+ * The number of the row, against the digits in it. It needs the space: in a
+ * typewriter face and with nothing between them, the 10 of row ten reads as
+ * the first two digits of the word.
+ */
 .store-index {
     color: var(--ink-dim);
+    margin-right: 1ch;
 }
 
 /* ---- Operations menu --------------------------------------------------- */
@@ -1130,6 +1154,20 @@ a:hover {
     /* The dimmed console around a panel is worth less than the panel is. */
     .overlay {
         padding: 1rem 0.5rem;
+    }
+
+    /*
+     * A finger is a blunter instrument than a mouse, and a console key that is
+     * comfortable to click at a desk is a thing to be missed on a phone. So
+     * everything that is pressed or typed into is given the height a touch
+     * screen asks for. A checkbox is left as it is: it is drawn by the browser
+     * and stretching it only makes it a strange shape.
+     */
+    button,
+    select,
+    input:not([type="checkbox"]) {
+        min-height: 2.75rem;
+        padding: 0.4rem 0.7rem;
     }
 
     /* The logo is a heading here rather than a nameplate across the top. */

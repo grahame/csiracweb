@@ -47,7 +47,7 @@ export function OptionsMenu({ controller, onClose, onExit }: OptionsMenuProps) {
     const [triggerHigh, triggerLow] = toScale32(view.triggerAddress >> 10);
 
     return (
-        <div className="options-screen" role="dialog" aria-label="Options">
+        <div className="options-screen" role="dialog" aria-modal="true" aria-label="Options" tabIndex={-1}>
             <h2>Options</h2>
 
             <section className="options-group">
