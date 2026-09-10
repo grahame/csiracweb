@@ -9,6 +9,7 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate } from "react-router";
 
+import { About } from "./About";
 import { Console } from "./Console";
 import { InitialSettings } from "./InitialSettings";
 import { InterprogramPage } from "./InterprogramPage";
@@ -36,6 +37,10 @@ export function App() {
                 <main>
                     <Routes>
                         <Route path="/" element={<PickerScreen />} />
+
+                        {/* Where the emulator came from, which used to be four paragraphs
+                        at the foot of every screen. */}
+                        <Route path="/about" element={<About />} />
 
                         {/* Writing Interprogram wants none of the machine's state: no tape in
                     the reader, no switches, nothing to carry between screens. It is a
@@ -265,38 +270,27 @@ function usePageTitle() {
 
 const TITLES: Record<string, string> = {
     "": "CSIRAC Emulator",
+    about: "About — CSIRAC Emulator",
     interprogram: "Interprogram — CSIRAC Emulator",
     settings: "Initial settings — CSIRAC Emulator",
     console: "Console — CSIRAC Emulator",
 };
 
+/**
+ * The foot of every screen.
+ *
+ * Whose emulator this is a port of belongs on every screen, because it is his
+ * work being run; the rest of the history is a page of its own, linked from
+ * here. See About.
+ */
 function Credit() {
     return (
         <footer className="credit">
             <p>
-                CSIRAC was Australia&rsquo;s first digital computer, and the fourth stored program computer in the
-                world. It ran from 1949 to 1964 and survives intact at Museums Victoria.
+                A web port of <strong>CSIRACEM</strong>, John W. Spencer&rsquo;s CSIRAC emulator.
             </p>
-            <p>
-                Various{" "}
-                <a href="https://cis.unimelb.edu.au/about/history/csirac/emulator" target="_blank">
-                    emulators for CSIRAC have been developed
-                </a>
-                . This one is a port of <strong>CSIRACEM</strong>, written in Turbo Pascal 6 by{" "}
-                <strong>John W. Spencer</strong>, who used CSIRAC from 1959 to 1964. In 2011 &ndash; some fifteen years
-                ago! &ndash; he was kind enough to share the source code with{" "}
-                <a href="https://grahame.dev/">Grahame Bowland</a>, the author of this page, and to give permission for
-                it to be ported to the web. CSIRACEM required a DOS machine or emulator to run, which has become
-                increasingly difficult; this page needs nothing more than a web browser. It also draws upon some CSIRAC
-                tape images which were included with Bill Purvis&rsquo; 2021 Java port of the emulator, but does not
-                otherwise rely on that work.
-            </p>
-            <p>
-                Claude Code was used substantially in developing this page, primarily in taking the Turbo Pascal
-                emulator and porting it to Typescript. Some human code review of the generated code has been carried
-                out, but this has not been by any means exhaustive.
-            </p>
-            <p>
+            <p className="credit-links">
+                <Link to="/about">About this emulator</Link>
                 <a href="https://github.com/grahame/csiracweb">source code on github</a>
             </p>
         </footer>

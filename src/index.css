@@ -246,25 +246,6 @@ pre {
     color: var(--error-ink);
 }
 
-/*
- * How wide a line of prose may get.
- *
- * The page is as wide as the machine's displays need it to be, which is a good
- * deal wider than anything is comfortable to read across: a line running the
- * whole 1120px is a hundred and twenty characters, and the eye loses its place
- * coming back for the next one. Anything set in the titling face is therefore
- * given a measure. What is set in the typewriter face is not: those are the
- * machine's own columns, and their width is the width of what is in them.
- */
-.subtitle,
-.tape-picker p,
-.interprogram-screen > p,
-.viewer-note,
-.operating-notes,
-.credit p {
-    max-width: 68ch;
-}
-
 /* ---- Tape picker ------------------------------------------------------- */
 
 .subtitle {
@@ -321,13 +302,9 @@ pre {
     color: var(--accent);
 }
 
-/*
- * A data tape is offered under its own title, which is as long as it is: the
- * box takes the width of its longest title and then stops at the measure the
- * notes beside it keep, so the column has one right hand edge rather than two.
- */
+/* A data tape is offered under its own title, which is as long as it is. */
 .tape-data select {
-    max-width: 68ch;
+    max-width: 100%;
 }
 
 .tape-upload {
@@ -723,6 +700,7 @@ pre {
 .viewer-note {
     color: var(--ink-dim);
     margin: 0.5rem 0;
+    max-width: 90ch;
 }
 
 .viewer-note strong {
@@ -830,6 +808,13 @@ pre {
 
 .credit strong {
     color: var(--ink);
+}
+
+/* The two ways off the page, side by side rather than one under the other. */
+.credit-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
 }
 
 .tape-comment {

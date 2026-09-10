@@ -752,6 +752,37 @@ describe("choosing the tape, with the reader following it", () => {
 });
 
 /**
+ * Where the emulator came from, which is a page rather than a footer.
+ *
+ * The credit used to be four paragraphs under every screen. It is one line and
+ * a link now, so the link has to go somewhere: these are the two ways to it.
+ */
+describe("the about page", () => {
+    it("is reached from the foot of the page", async () => {
+        const user = userEvent.setup();
+        renderApp();
+
+        await user.click(screen.getByRole("link", { name: "About this emulator" }));
+
+        expect(window.location.hash).toBe("#/about");
+        expect(screen.getByRole("heading", { name: "About this emulator" })).toBeTruthy();
+        expect(screen.getByText(/Bill Purvis/)).toBeTruthy();
+    });
+
+    it("is reached from the first thing the tape picker says, and leads back", async () => {
+        const user = userEvent.setup();
+        renderApp();
+
+        await user.click(screen.getByRole("link", { name: /about the machine and this emulator/ }));
+        expect(window.location.hash).toBe("#/about");
+
+        await user.click(screen.getByRole("link", { name: "Back to the tapes" }));
+        expect(window.location.hash).toBe("#/");
+        expect(screen.getByRole("heading", { name: /Experience Australia/ })).toBeTruthy();
+    });
+});
+
+/**
  * The Interprogram page is the console's procedure done for you: no tape to
  * thread and no switches to work, just a source and a Run. It is the same
  * emulator and the same 1960 compiler tape underneath, and the same displays:
