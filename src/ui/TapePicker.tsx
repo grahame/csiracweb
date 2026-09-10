@@ -285,7 +285,8 @@ export function TapePicker({ onMount }: TapePickerProps) {
                 </a>{" "}
                 This page lets you load up and run programs on an emulated version of CSIRAC, and{" "}
                 <Link to="/interprogram">program in Australia's first domestically produced programming language</Link>,
-                G. W. Hill's Interprogram. There is more <Link to="/about">about the machine and this emulator</Link>.
+                G. W. Hill's Interprogram. Find out{" "}
+                <Link to="/about">about the machine and this emulator on the about page</Link>.
             </p>
             <h2>Code in Australia's first programming language</h2>
             <p className="viewer-note">

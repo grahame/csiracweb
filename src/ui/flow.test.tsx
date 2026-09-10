@@ -1001,8 +1001,11 @@ describe("writing Interprogram", () => {
         await atThePage(user);
         await user.click(screen.getByRole("button", { name: "Run" }));
 
-        // The machine runs at its own speed, so there is time to catch it working.
-        await user.click(await screen.findByRole("button", { name: "Pause" }));
+        // The machine runs at its own speed, so there is time to catch it working
+        // — but not straight away: the first step of the procedure is read out
+        // and waited on before anything is done about it, and the button says
+        // Run until then. See OPERATOR_PAUSE_MS.
+        await user.click(await screen.findByRole("button", { name: "Pause" }, { timeout: 10_000 }));
         const stoppedAt = instructionCount();
         expect(stoppedAt).toBeGreaterThan(0);
 

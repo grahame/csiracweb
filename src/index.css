@@ -1122,6 +1122,31 @@ a:hover {
     font-weight: bold;
 }
 
+/*
+ * About to be worked: the switches this step calls for are worked and RETURN
+ * pressed a couple of seconds from now, and it blinks in the meantime so that
+ * what is coming can be read before it happens rather than after.
+ *
+ * Standing still it is marked out the way the current step is, so that
+ * somebody who has asked for less movement on their screen is not left to
+ * guess which of them is next.
+ */
+.narration-step.starting {
+    color: var(--ink-strong);
+    animation: blink 1s steps(2, start) infinite;
+}
+
+.narration-step.starting::marker {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .narration-step.starting {
+        animation: none;
+    }
+}
+
 .narration-now {
     margin: 0.4rem 0 0;
     color: var(--accent);

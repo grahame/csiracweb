@@ -47,8 +47,13 @@ import { useMachine } from "./useMachine";
  * stops and stops again almost at once. Answering them the instant they happen
  * would carry the narration past faster than it can be read, and faster than
  * anybody ever worked this machine.
+ *
+ * A couple of seconds is long enough to read the step that is coming before it
+ * happens, which is the point of watching at all. The step blinks while it is
+ * being waited on, so what is about to be done is on the screen rather than
+ * only its having been done.
  */
-const OPERATOR_PAUSE_MS = 700;
+const OPERATOR_PAUSE_MS = 2_000;
 
 export interface WatchedRun {
     /** The machine, its displays and its switches. */
@@ -56,6 +61,11 @@ export interface WatchedRun {
     steps: readonly InterprogramStep[];
     /** The step being carried out, of `steps`. Only meaningful once started. */
     at: number;
+    /**
+     * The step the machine is waiting to start, of `steps`, or null when it is
+     * not waiting on one. This is what blinks in the narration.
+     */
+    coming: number | null;
     /** How the run ended, or null while it is still going. */
     outcome: InterprogramResult["outcome"] | null;
     /** True while the machine is obeying commands. */
@@ -103,6 +113,8 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
 
     const steps = useMemo(() => interprogramSteps(day), [day]);
     const [at, setAt] = useState(0);
+    /** The step being counted down to, while the pause below runs. */
+    const [coming, setComing] = useState<number | null>(null);
     const [phase, setPhase] = useState<Phase>("idle");
     const [outcome, setOutcome] = useState<InterprogramResult["outcome"] | null>(null);
 
@@ -127,6 +139,7 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
         hootsSincePunch.current = null;
         setOutcome(null);
         setAt(0);
+        setComing(0);
         setPhase("reading in");
         // Switching on, with the compiler tape in the twelve hole reader and the
         // source in the five hole reader. Threading them is all this does; the
@@ -148,17 +161,27 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
         latest.current.stop();
         setPhase("idle");
         setAt(0);
+        setComing(null);
         setOutcome(null);
     }, []);
 
     // Reading the compiler in. Its tape has to be in React's hands before the
     // reader can be set going, because that is where the console keeps it.
+    //
+    // The first step is waited on like the rest of them: pressing Run and having
+    // the machine away before the first line of the procedure can be read is
+    // exactly what the pause exists to prevent.
     useEffect(() => {
         if (phase !== "reading in") return;
         const c = latest.current;
         if (c.programText !== compilerTape || c.dataText !== sourceTape.current) return;
-        setPhase("stepping");
-        c.acceptSettings();
+
+        const hand = setTimeout(() => {
+            setComing(null);
+            setPhase("stepping");
+            c.acceptSettings();
+        }, OPERATOR_PAUSE_MS);
+        return () => clearTimeout(hand);
     }, [phase, compilerTape]);
 
     // Every stop is a step of the procedure finishing. Answer it: work whatever
@@ -168,6 +191,7 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
         const c = latest.current;
 
         if (statusIsError) {
+            setComing(null);
             setOutcome("error");
             setPhase("done");
             return;
@@ -178,6 +202,7 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
             // The last step does not end at a stop. Arriving here means the program
             // used the stop gate rather than hooting, which is a program that has
             // finished in the other way CSIRAC programs did.
+            setComing(null);
             setOutcome("stopped");
             setPhase("done");
             return;
@@ -189,9 +214,13 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
             return;
         }
 
+        // The step that is coming is on the screen for the length of the pause,
+        // blinking, before anything is done about it.
+        setComing(next);
         const hand = setTimeout(() => {
             pressTheKeys(c, steps[next]);
             if (steps[next].runsOut) hootsSincePunch.current = watchTheHoot(c.machine);
+            setComing(null);
             setAt(next);
             c.start();
         }, OPERATOR_PAUSE_MS);
@@ -212,6 +241,7 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
         if (!over) return;
 
         latest.current.stop();
+        setComing(null);
         setOutcome(over);
         setPhase("done");
     }, [phase, running, view.instructionCount]);
@@ -220,6 +250,7 @@ export function useInterprogramRun({ source, compilerTape, day }: RunOptions): W
         controller,
         steps,
         at,
+        coming,
         outcome,
         running,
         started: phase !== "idle",
@@ -262,7 +293,7 @@ export function InterprogramWatch({ run }: { run: WatchedRun }) {
 
 /** What is being pressed, and why, as it is pressed. */
 function Narration({ run }: { run: WatchedRun }) {
-    const { steps, at, running } = run;
+    const { steps, at, coming, running } = run;
 
     return (
         <div className="narration">
@@ -271,13 +302,7 @@ function Narration({ run }: { run: WatchedRun }) {
                 {steps.map((step, index) => (
                     <li
                         key={index}
-                        className={
-                            index === at
-                                ? "narration-step current"
-                                : index < at
-                                  ? "narration-step done"
-                                  : "narration-step"
-                        }
+                        className={stepClass(index, at, coming)}
                         aria-current={index === at ? "step" : undefined}
                     >
                         {step.does}
@@ -285,8 +310,21 @@ function Narration({ run }: { run: WatchedRun }) {
                 ))}
             </ol>
             <p className="narration-now">
-                Step {at + 1} of {steps.length}: {running ? "the machine is running." : "the machine has stopped."}
+                {coming === null
+                    ? `Step ${at + 1} of ${steps.length}: ${running ? "the machine is running." : "the machine has stopped."}`
+                    : `Step ${coming + 1} of ${steps.length}: about to be worked.`}
             </p>
         </div>
     );
+}
+
+/**
+ * How a step is shown: what is about to be done, what is being done, and what
+ * has been. A step that is coming takes precedence over the one it follows,
+ * because it is the one worth reading.
+ */
+function stepClass(index: number, at: number, coming: number | null): string {
+    if (index === coming) return "narration-step starting";
+    if (index === at) return "narration-step current";
+    return index < at ? "narration-step done" : "narration-step";
 }

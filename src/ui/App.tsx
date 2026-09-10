@@ -291,7 +291,7 @@ function Credit() {
             </p>
             <p className="credit-links">
                 <Link to="/about">About this emulator</Link>
-                <a href="https://github.com/grahame/csiracweb">source code on github</a>
+                <a href="https://github.com/grahame/csiracweb">Source code on GitHub</a>
             </p>
         </footer>
     );
