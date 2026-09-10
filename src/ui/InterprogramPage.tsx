@@ -150,6 +150,15 @@ export function InterprogramPage() {
             : null
         : (result?.commands ?? null);
 
+    /**
+     * How deep the box is: as deep as the program in it, within reason.
+     *
+     * A fixed sixteen rows left half a screen of nothing under the five line
+     * program the page starts with, and was not enough for an Ex tape, which
+     * is a whole session and runs to twenty-odd lines with its data.
+     */
+    const rows = Math.min(28, Math.max(10, source.split("\n").length + 1));
+
     /** True once pressing Run has put something on the page to look at. */
     const somethingToSee = watching ? watched.started : result !== null;
 
@@ -203,82 +212,91 @@ export function InterprogramPage() {
                 written for, and your program runs on that machine with all its quirks and limitations.
             </p>
 
-            <p className="interprogram-examples">
-                <label>
-                    Or start from one of the examples that came with the compiler tape:
-                    <select value={example} onChange={(event) => void loadExample(event.target.value)}>
-                        <option value="">A FIRST PROGRAM</option>
-                        {INTERPROGRAM_EXAMPLES.map((tape) => (
-                            <option key={tape.name} value={tape.name}>
-                                {exampleLabel(tape)}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-            </p>
+            {/*
+                The editor and everything that belongs to it, in a column the
+                width of the tape it is punched onto. Left to the width of the
+                page, the chooser and the prompt line ran out past the right
+                hand edge of the box they belong to.
+            */}
+            <div className="interprogram-column">
+                <p className="interprogram-examples">
+                    <label>
+                        Or start from one of the examples that came with the compiler tape:
+                        <select value={example} onChange={(event) => void loadExample(event.target.value)}>
+                            <option value="">A FIRST PROGRAM</option>
+                            {INTERPROGRAM_EXAMPLES.map((tape) => (
+                                <option key={tape.name} value={tape.name}>
+                                    {exampleLabel(tape)}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                </p>
 
-            <textarea
-                className="interprogram-source"
-                value={source}
-                spellCheck={false}
-                rows={16}
-                aria-label="Interprogram source"
-                onChange={(event) => setSource(event.target.value)}
-            />
+                <textarea
+                    className="interprogram-source"
+                    value={source}
+                    spellCheck={false}
+                    rows={rows}
+                    aria-label="Interprogram source"
+                    onChange={(event) => setSource(event.target.value)}
+                />
 
-            <p className="viewer-note">
-                Your program will be punched, in capitals, on 5-hole tape. Anything after <code>#</code> is a comment.
-            </p>
+                <p className="viewer-note">
+                    Your program will be punched, in capitals, on 5-hole tape. Anything after <code>#</code> is a
+                    comment.
+                </p>
 
-            <div className="prompt-line">
-                <span className="mode-control">
-                    <span className="mode-label">Show</span>
-                    <button
-                        type="button"
-                        className={watching ? "prompt-action active" : "prompt-action"}
-                        aria-pressed={watching}
-                        title="the registers, store, readers and tubes, as the machine works"
-                        onClick={() => showWatching(true)}
-                    >
-                        CSIRAC working
-                    </button>
-                    <button
-                        type="button"
-                        className={watching ? "prompt-action" : "prompt-action active"}
-                        aria-pressed={!watching}
-                        title="skip the session and report what the punch produced"
-                        onClick={() => showWatching(false)}
-                    >
-                        Skip to the result
-                    </button>
-                </span>
+                <div className="prompt-line">
+                    <span className="mode-control">
+                        <span className="mode-label">Show</span>
+                        <button
+                            type="button"
+                            className={watching ? "prompt-action active" : "prompt-action"}
+                            aria-pressed={watching}
+                            title="the registers, store, readers and tubes, as the machine works"
+                            onClick={() => showWatching(true)}
+                        >
+                            CSIRAC working
+                        </button>
+                        <button
+                            type="button"
+                            className={watching ? "prompt-action" : "prompt-action active"}
+                            aria-pressed={!watching}
+                            title="skip the session and report what the punch produced"
+                            onClick={() => showWatching(false)}
+                        >
+                            Skip to the result
+                        </button>
+                    </span>
 
-                {watching ? <WatchedOutcome run={watched} /> : result ? <Outcome result={result} /> : null}
+                    {watching ? <WatchedOutcome run={watched} /> : result ? <Outcome result={result} /> : null}
 
-                {/*
-                    The right hand end of the line: how far the machine has got, and the
-                    thing you press. They are kept together so that a long sentence about
-                    how the run ended carries both of them onto the next line rather than
-                    leaving the count stranded on its own.
-                */}
-                <span className="prompt-right">
-                    {commands === null ? null : (
-                        <span className="prompt-count">{commands.toLocaleString()} commands</span>
-                    )}
-                    <button
-                        type="button"
-                        className="prompt-action primary"
-                        onClick={press.act}
-                        disabled={(running && !watching) || !compilerTape}
-                    >
-                        {press.label}
-                    </button>
-                </span>
+                    {/*
+                        The right hand end of the line: how far the machine has got, and the
+                        thing you press. They are kept together so that a long sentence about
+                        how the run ended carries both of them onto the next line rather than
+                        leaving the count stranded on its own.
+                    */}
+                    <span className="prompt-right">
+                        {commands === null ? null : (
+                            <span className="prompt-count">{commands.toLocaleString()} commands</span>
+                        )}
+                        <button
+                            type="button"
+                            className="prompt-action primary"
+                            onClick={press.act}
+                            disabled={(running && !watching) || !compilerTape}
+                        >
+                            {press.label}
+                        </button>
+                    </span>
+                </div>
             </div>
 
             {loadError ? <p className="error">{loadError}</p> : null}
 
-            <div ref={outputRef}>
+            <div className="interprogram-output" ref={outputRef}>
                 {watching ? (
                     watched.started ? (
                         <InterprogramWatch run={watched} />

@@ -441,6 +441,20 @@ pre {
     white-space: pre;
 }
 
+/*
+ * Every line of the menu is a thing to press, and without a border or a fill
+ * the column read as something the console had printed. The marker is what
+ * says otherwise: it is against every line because every line is one.
+ */
+.menu-item::before {
+    content: "\203a\00a0";
+    color: var(--ink-dim);
+}
+
+.menu-item:hover::before {
+    color: inherit;
+}
+
 .menu-readout {
     display: flex;
     gap: 0.4rem;
@@ -900,6 +914,17 @@ code {
     margin-bottom: 0.6rem;
 }
 
+/*
+ * ... but the right hand side is the right hand side of a console, not of a
+ * browser window. The DOS screen was eighty columns and the switches sat a few
+ * characters clear of the tape; left to the width of the page there is half a
+ * screen of nothing between them. The narration on the Interprogram page is
+ * prose and wants the room, so it is only the console that is held in.
+ */
+.console-screen .tape-row {
+    max-width: 80ch;
+}
+
 .readers {
     display: flex;
     flex-direction: column;
@@ -1047,9 +1072,17 @@ a:hover {
  * wider than a column of prose, so the page takes the room the console screen
  * takes. Prose and the source box carry their own measure; see .viewer-note.
  */
+/*
+ * The editor's column: the width of the tape, which is eighty columns.
+ * Everything that belongs to the box shares it, so the chooser above and the
+ * prompt line below end where the box ends.
+ */
+.interprogram-column {
+    max-width: 80ch;
+}
+
 .interprogram-source {
     width: 100%;
-    max-width: 80ch;
     font-family: var(--mono);
     font-size: 0.95rem;
     line-height: 1.5;
@@ -1133,6 +1166,14 @@ a:hover {
 
 .prompt-right .prompt-count {
     margin-left: 0;
+}
+
+/*
+ * What came back, which is a thing of its own rather than the foot of the
+ * controls: run flush against the prompt line, the paper read as part of it.
+ */
+.interprogram-output:not(:empty) {
+    margin-top: 1.2rem;
 }
 
 /* Anything the compiler said that was not an instruction to the operator. */
