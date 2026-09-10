@@ -99,7 +99,7 @@ describe("running SQRT from the console", () => {
         renderApp();
 
         // Mount the square roots tape.
-        await user.click(screen.getByRole("button", { name: "Sqrt.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^Sqrt\.cvt/ }));
 
         // RETURN reads the program into store; it stops at the DO command.
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
@@ -125,7 +125,7 @@ describe("running SQRT from the console", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "Sqrt.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^Sqrt\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -145,7 +145,7 @@ describe("running SQRT from the console", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "Sqrt.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^Sqrt\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -159,7 +159,7 @@ describe("running T712A, which needs no data tape", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -176,7 +176,7 @@ describe("reading the tape in the viewer", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         // The tape can be read before it is put through the machine.
         await user.click(screen.getAllByRole("button", { name: /View or edit the tape/ })[0]);
 
@@ -195,7 +195,7 @@ describe("reading the tape in the viewer", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "ITest.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^ITest\.cvt/ }));
         await user.click(screen.getAllByRole("button", { name: /View or edit the tape/ })[0]);
         await user.click(screen.getByRole("button", { name: "ITest.dat" }));
 
@@ -207,7 +207,7 @@ describe("reading the tape in the viewer", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "Sqrt.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^Sqrt\.cvt/ }));
         await user.click(screen.getAllByRole("button", { name: /View or edit the tape/ })[0]);
         await user.click(screen.getByRole("button", { name: "Sqrt.dat" }));
 
@@ -237,7 +237,7 @@ describe("browser history", () => {
         renderApp();
         expect(route()).toBe("/");
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         expect(route()).toBe("/settings");
 
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
@@ -249,7 +249,7 @@ describe("browser history", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -264,7 +264,7 @@ describe("browser history", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getAllByRole("button", { name: /View or edit the tape/ })[0]);
         expect(route()).toBe("/settings/tape");
         expect(document.querySelector(".tape-viewer")).not.toBeNull();
@@ -278,7 +278,7 @@ describe("browser history", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
         await user.click(screen.getByRole("button", { name: /Execute program/ }));
@@ -311,7 +311,7 @@ describe("browser history", () => {
         );
 
         await waitFor(() => expect(route()).toBe("/"));
-        expect(screen.getByRole("button", { name: "Sqrt.cvt" })).toBeTruthy();
+        expect(screen.getByRole("button", { name: /^Sqrt\.cvt/ })).toBeTruthy();
     });
 });
 
@@ -477,7 +477,7 @@ describe("the listing following the read head", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -500,7 +500,7 @@ describe("the listing following the read head", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getAllByRole("button", { name: /View or edit the tape/ })[0]);
 
         // Nothing has gone through the reader, so there is nothing behind the head.
@@ -519,7 +519,7 @@ describe("Interprogram's walkthrough", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "InterProgram.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^InterProgram\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -543,7 +543,7 @@ describe("Interprogram's walkthrough", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "InterProgram.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^InterProgram\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -576,7 +576,7 @@ describe("Interprogram's walkthrough", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 
@@ -590,7 +590,7 @@ describe("the operations menu from the keyboard", () => {
     /** Get to the console with a program read in. */
     async function atConsole(user: ReturnType<typeof userEvent.setup>) {
         renderApp();
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
     }
@@ -681,7 +681,9 @@ describe("the operations menu from the keyboard", () => {
 describe("choosing the tape, with the reader following it", () => {
     async function atConsoleWith(user: ReturnType<typeof userEvent.setup>, tape: string) {
         renderApp();
-        await user.click(screen.getByRole("button", { name: tape }));
+        // A tape button is named for the tape and then for what it is, so it is
+        // asked for by the label written on the tape.
+        await user.click(screen.getByRole("button", { name: new RegExp(`^${tape.replace(".", "\\.")}`) }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
     }
@@ -991,7 +993,7 @@ describe("the one shot switch", () => {
         const user = userEvent.setup();
         renderApp();
 
-        await user.click(screen.getByRole("button", { name: "T712A.cvt" }));
+        await user.click(screen.getByRole("button", { name: /^T712A\.cvt/ }));
         await user.click(screen.getByRole("button", { name: /Read program into memory/ }));
         await settle();
 

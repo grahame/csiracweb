@@ -420,9 +420,15 @@ function TapeList({
                 const selected = chosenData[tape.name] ?? tape.data[0];
                 return (
                     <li key={tape.name}>
+                        {/* The button says what is written on the tape, because that is
+                            how a tape is asked for; what the tape is is beside it, for
+                            the eye. Read out rather than looked at, the two arrive
+                            apart and the label alone says nothing, so the button is
+                            named as it would be spoken: the tape, and then what it is. */}
                         <button
                             type="button"
                             disabled={busy}
+                            aria-label={`${tape.name} — ${tape.title}`}
                             onClick={() => onMount(tape.name, selected, tape.notes, tape.walkthrough ?? null)}
                         >
                             {tape.name}
