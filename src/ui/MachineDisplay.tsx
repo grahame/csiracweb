@@ -1,10 +1,10 @@
 /**
  * Everything the machine shows while it is working.
  *
- * The bank of cathode ray tubes across the top, the keys that work the machine
- * directly under them, then the tape readers, then what the teleprinter and the
- * punch have produced, and last the registers and a window on main store
- * written out in ones and zeroes.
+ * The bank of cathode ray tubes across the top, the hand-set switches under
+ * them, then the keys that work the machine, then the tape readers, then what
+ * the teleprinter and the punch have produced, and last the registers and a
+ * window on main store written out in ones and zeroes.
  *
  * The tubes lead, and take the whole width, because they are what an operator
  * watched: they show a running machine at a glance, where the printed displays
@@ -79,6 +79,13 @@ export function MachineDisplay({ controller, aside, controls, onSetRegister }: M
             */}
             <Crt tubes={tubes} />
 
+            {/* NA and NB are set by hand rather than computed, so they are a
+                thing to work rather than a thing to read. They sit under the
+                tubes, where they sat on the console, and above the keys: a
+                number goes onto the switches before the machine is set going,
+                not after. */}
+            <SwitchPanel na={view.na} nb={view.nb} onSet={onSetRegister} />
+
             {controls}
 
             {/*
@@ -97,12 +104,6 @@ export function MachineDisplay({ controller, aside, controls, onSetRegister }: M
                 />
                 {aside}
             </div>
-
-            {/* NA and NB are set by hand rather than computed, so they are a
-                thing to work rather than a thing to read: the row of switches
-                goes with the reader and the keys, not with the printed state
-                at the foot of the page. */}
-            <SwitchPanel na={view.na} nb={view.nb} onSet={onSetRegister} />
 
             {/* The teleprinter was eighty columns wide, so the paper is. */}
             <PrinterOutput head="Teleprinter (OT)" text={view.teleprinter || " "} columns={80} />
